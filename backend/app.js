@@ -103,7 +103,10 @@ app.get('/logout', (req, res) => {
     res.redirect('http://localhost:8100/');
   });
 });
-
+/**********************************USERS***************************************\
+ *                                                                            *
+ *                                                                            *
+ \*****************************************************************************/
 // Get the profile of the user
 // If the user is not authenticated, redirect to '/'
 // Else, return the user
@@ -124,6 +127,24 @@ app.get('/profile/:user', (req, res) => {
   } else {
     res.redirect('http://localhost:8100/');
   }
+});
+
+// PATCH the repos of the user
+app.patch('/profile/:username/repos', (req, res) => {
+  const repos = req.body.repos;
+  const username = req.params.username;
+  prisma.user.update({
+    where: {
+      pseudo: username,
+    },
+    data: {
+      repos: repos,
+    },
+  }).then((user) => {
+    res.json(user);
+  }).catch((err) => {
+    res.json(err);
+  });
 });
 /*********************************EVENTS**************************************\
  *                                                                            *
