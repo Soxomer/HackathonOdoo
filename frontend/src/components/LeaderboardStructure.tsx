@@ -14,16 +14,19 @@ interface LeaderboardStructureProps {
 
 const LeaderboardStructure: React.FC<LeaderboardStructureProps> = ({list}) => {
   return (
-    <>
+    <div className="leaderboard">
         {
-            list.map(({pseudo,eventsCount}) => {
+            list.map((item, index) => {
+                if(index == 0) return <LeaderboardItem classname="first-item" key={item.pseudo} name={item.pseudo} url="https://ionicframework.com/docs/img/demos/avatar.svg" score={item.eventsCount}/>
+                if(index == 1) return <LeaderboardItem classname="second-item" key={item.pseudo} name={item.pseudo} url="https://ionicframework.com/docs/img/demos/avatar.svg" score={item.eventsCount}/>
+                if(index == 2) return <LeaderboardItem classname="third-item" key={item.pseudo} name={item.pseudo} url="https://ionicframework.com/docs/img/demos/avatar.svg" score={item.eventsCount}/>
                 return (
-                    <LeaderboardItem key={pseudo} name={pseudo} url="https://ionicframework.com/docs/img/demos/avatar.svg" score={eventsCount}/>
+                    <LeaderboardItem key={item.pseudo} name={item.pseudo} url="https://ionicframework.com/docs/img/demos/avatar.svg" score={item.eventsCount}/>
                 )
             })
         }
 
-    </>
+    </div>
   );
 };
 
