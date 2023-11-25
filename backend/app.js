@@ -3,6 +3,7 @@ const passport = require("passport");
 const cors = require("cors");
 const app = express()
 const cookieParser = require('cookie-parser');
+const parser = require("body-parser");
 const port = 3000
 const GitHubStrategy = require('passport-github').Strategy;
 const session = require('express-session');
@@ -14,6 +15,12 @@ const prisma = new PrismaClient()
 // use it before all route definitions
 app.use(cors());
 app.use(cookieParser());
+
+// parse application/x-www-form-urlencoded
+app.use(parser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(parser.json())
 
 // Configure express-session
 app.use(session({
@@ -94,26 +101,22 @@ app.get('/logout', (req, res) => {
 // Get the profile of the user
 // If the user is not authenticated, redirect to '/'
 // Else, return the user
-app.get('/profile', (req, res) => {
-  // Check if the user is authenticated
-  if (req.isAuthenticated()) {
-    console.log("is authenticated");
+app.get('/profile/:user', (req, res) => {
+  if (req.params.user != undefined) {
     const userEvents = prisma.user.findUnique({
       where: {
-        id: req.user.id,
+        pseudo: req.params.user,
       },
       include: {
         events: true,
       },
     }).then((user) => {
-      console.log(user);
       res.json(user);
     }).catch((err) => {
-      console.log(err);
       res.json(err);
     });
   } else {
-    res.redirect('/');
+    res.redirect('http://localhost:8100/');
   }
 });
 

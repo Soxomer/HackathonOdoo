@@ -4,23 +4,9 @@ import React, {useEffect, useState} from 'react';
 import {IonContent, IonSegment, IonSegmentButton, IonTitle} from '@ionic/react';
 import LeaderboardStructure from "./LeaderboardStructure";
 
-// async function getListBoitesVsBoites() {
-//     return await fetch('http://localhost:3000/boitesVsboites');
-// }
-//
-// async function getListUsersVsUsers() {
-//     return await fetch('http://localhost:3000/usersVsusers');
-// }
-//
-// async function getListUsersBoitesVsUsersBoites() {
-//     return await fetch('http://localhost:3000/usersboitesVsusersboites');
-// }
-
 interface LeaderboardProps {
     tab: string;
 }
-
-
 
 const Leaderboard: React.FC = () => {
     const [leaderboardData, setLeaderboardData] = useState<any[]>([]);

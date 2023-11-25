@@ -1,8 +1,9 @@
-import { IonButtons, IonMenuButton, IonMenu, IonHeader, IonToolbar, IonTitle, IonGrid, IonRow, IonCol, IonIcon, IonButton, IonContent, IonPage } from '@ionic/react';
-import { logOut, logoGithub, personAddOutline, personCircleOutline, personOutline, search } from 'ionicons/icons';
+import { IonGrid, IonRow, IonCol, IonIcon, IonButton, IonContent, IonPage } from '@ionic/react';
+import { logoGithub } from 'ionicons/icons';
 import Cookies from "js-cookie";
 import './Home.css';
-import { Profiler, useEffect } from 'react';
+import { useEffect } from 'react';
+import Header from '../components/Header';
 
 const Home: React.FC = () => {
 
@@ -11,24 +12,9 @@ const Home: React.FC = () => {
     token = Cookies.get("username");
   })
 
-  function nukeCookies(){
-    Cookies.remove("username");
-  }
-
   return (
     <IonPage>
-    <IonToolbar>
-        {token != undefined ? (
-        <IonButtons slot="secondary">
-        <IonButton>
-            <IonIcon slot="icon-only" icon={ personCircleOutline }></IonIcon>
-          </IonButton>
-        <IonButton href="http://localhost:3000/logout" onClick={nukeCookies}>
-            <IonIcon slot="icon-only" icon={ logOut }></IonIcon>
-          </IonButton>
-        </IonButtons>
-        ) : null}
-      </IonToolbar>
+      <Header />
       <IonContent>
           {token == undefined ? (
             <IonGrid fixed={true}>
