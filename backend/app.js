@@ -7,6 +7,7 @@ const port = 3000
 const GitHubStrategy = require('passport-github').Strategy;
 const session = require('express-session');
 const {PrismaClient} = require("@prisma/client");
+const bodyParser = require('body-parser');
 
 const prisma = new PrismaClient()
 
@@ -24,6 +25,7 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(bodyParser.json());
 
 // Serialize and deserialize user
 passport.serializeUser((user, done) => {
@@ -39,9 +41,9 @@ passport.use(new GitHubStrategy( {
       clientSecret: "14f9ed89365cdd5330d5023f117ddbad643f1a87",
       callbackURL: "http://localhost:3000/auth/github/callback"
     }, async (accessToken, refreshToken, profile, done) => {
-      // console.log(accessToken);
-      // console.log(refreshToken);
-      // console.log(profile);
+      console.log(accessToken);
+      console.log(refreshToken);
+      console.log(profile);
       let user = await prisma.user.findUnique({
         where: {
           id: profile.id,
@@ -52,8 +54,10 @@ passport.use(new GitHubStrategy( {
       user = prisma.user.create({
         data: {
           id: profile.id,
+          name: profile.displayName,
           pseudo: profile.username,
           token: accessToken,
+          urlAvatar: profile._json.avatar_url,
         },
       });
   console.log( await user);
@@ -119,17 +123,39 @@ app.get('/profile', (req, res) => {
 
 
 // Create a new event
-app.post('/event/', (req, res) => {
-  const {name, date, description, location} = req.body;
-  const event = prisma.event.create({
-    data: {
-      name: name,
-      date: date,
-      description: description,
-      location: location,
+app.post('/event',  (req, res) => {
+  const {type, creator} = req.body;
+  console.log(req.body)
+  console.log(type);
+  console.log(creator);
+  const event = prisma.event.findUnique({
+    where: {
+      type: type,
+      AND: {
+        creatorId: creator,
+      },
     },
+  }).then((event) => {
+    console.log(event);
+    if (!event) {
+      prisma.event.create({
+        data: {
+          type: type,
+          creatorId: creator,
+        },
+      });
+    } else {
+      prisma.event.update({
+        where: {
+          id: event.id,
+        },
+        data: {
+          quantity: event.quantity + 1,
+        },
+      });
+    }
+    res.json(event);
   });
-  res.json(event);
 });
 
 /*********************************RANKING*************************************/
@@ -159,10 +185,12 @@ app.get('/ranking/users', (req, res) => {
   });
 });
 
+
 // GET all users with their number of events from a company
 app.get('/ranking/company/:companyName', (req, res) => {
   if (!req.isAuthenticated()) {
     res.redirect('/');
+    return;
   }
   const company = req.params.companyName;
   prisma.company.findUnique({
@@ -202,6 +230,8 @@ app.get('/ranking/company/:companyName', (req, res) => {
     });
   });
 });
+
+
 
 // Start server
 app.listen(port, () => {

@@ -12,16 +12,20 @@ datasource db {
 
 model User {
   id        String   @id
+  name      String
+  urlAvatar String
   pseudo    String   @unique
   token     String
   company   Company? @relation(fields: [companyId], references: [id])
   companyId Int?
   events    Event[]
+  repos     String[]
 }
 
 model Event {
   id        Int    @id @default(autoincrement())
   type      String
+  quantity  Int    @default(1)
   creator   User   @relation(fields: [creatorId], references: [id])
   creatorId String
 }
