@@ -24,13 +24,13 @@ const Leaderboard: React.FC<LeaderboardProps> = ({usersData}) => {
             data = usersData;
         } else if (selectedSegment === 'tab2') {
             data = [
-                {name: 'Tab2 User1', score: 80},
-                {name: 'Tab2 User2', score: 70},
+                {pseudo: 'Tab2 User1', eventSum: 80},
+                {pseudo: 'Tab2 User2', eventSum: 70},
             ];
         } else if (selectedSegment === 'tab3') {
             data = [
-                {name: 'Tab3 User1', score: 60},
-                {name: 'Tab3 User2', score: 50},
+                {pseudo: 'Tab3 User1', eventSum: 60},
+                {pseudo: 'Tab3 User2', eventSum: 50},
             ];
         }
         setLeaderboardData(data);
