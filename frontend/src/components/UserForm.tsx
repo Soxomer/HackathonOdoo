@@ -1,13 +1,17 @@
 // MyFormComponent.tsx
 
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {IonButton, IonInput, IonSelect, IonSelectOption} from '@ionic/react';
+import Cookies from 'js-cookie';
 
 const UserForm: React.FC = () => {
     const [input1, setInput1] = useState<string>('');
     const [input2, setInput2] = useState<string>('');
     const [showInput3, setShowInput3] = useState<boolean>(false);
     const [input3, setInput3] = useState<string>('');
+
+    const [listOfRepos, setListOfRepos] = useState<string[]>([])
+    const [listOfOffices, setListOfOffices] = useState<string[]>([])
 
     const handleButtonPress = () => {
         setShowInput3(!showInput3);
@@ -19,6 +23,26 @@ const UserForm: React.FC = () => {
         // Add your logic to handle the form data
     };
 
+    const getListOfRepos = async () => {
+        const username = Cookies.get('username');
+        if (username === undefined) return;
+        const response = await fetch(`http://localhost:3000/user/${username}/repos`);
+        const repos = await response.json();
+        setListOfRepos(repos);
+        return repos;
+    }
+
+    const getListOfOffices = async () => {
+        const response = await fetch(`http://localhost:3000/offices`);
+        const offices = await response.json();
+        setListOfOffices(offices);
+        return offices;
+    }
+
+    useEffect( () => {
+        getListOfRepos();
+        getListOfOffices();
+    }, []);
     return (
         <form onSubmit={handleSubmit}>
             {/* Input 1 */}
@@ -28,8 +52,9 @@ const UserForm: React.FC = () => {
                 multiple
                 onIonChange={(e) => setInput1(e.detail.value)}
             >
-                <IonSelectOption value="option1">Option 1</IonSelectOption>
-                <IonSelectOption value="option2">Option 2</IonSelectOption>
+                {listOfRepos.map((repo) => (
+                    <IonSelectOption key={repo} value={repo}>{repo}</IonSelectOption>
+                ))}
             </IonSelect>
 
             {/* Input 2 */}
@@ -38,14 +63,15 @@ const UserForm: React.FC = () => {
                 value={input2}
                 onIonChange={(e) => setInput2(e.detail.value)}
             >
-                <IonSelectOption value="optionA">Option A</IonSelectOption>
-                <IonSelectOption value="optionB">Option B</IonSelectOption>
+                {listOfOffices.map((office) => (
+                    <IonSelectOption key={office} value={office}>{office}</IonSelectOption>
+                ))}
             </IonSelect>
 
-            {/* Button to toggle visibility of Input 3 */}
-            <IonButton onClick={handleButtonPress}>
-                {showInput3 ? 'Add your office' : 'Skip this step'}
-            </IonButton>
+            {/* Input 3 */}
+            <IonInput onClick={handleButtonPress}>
+                {showInput3 ? 'Don\'t add your office' : 'Add your office'}
+            </IonInput>
 
             {showInput3 && (
                 <IonInput
@@ -54,7 +80,7 @@ const UserForm: React.FC = () => {
             )}
 
             {/* Submit button */}
-            <button type="submit">Submit</button>
+            <IonButton type="submit">Submit</IonButton>
         </form>
     );
 };

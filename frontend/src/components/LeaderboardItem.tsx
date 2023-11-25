@@ -5,7 +5,7 @@ import { IonCol, IonAvatar,IonLabel, IonItem, IonRow } from '@ionic/react';
 interface LeaderboardProps {
     name: string,
     url: string,
-    score: string
+    score: Int16Array
 }
 
 const LeaderboardItem: React.FC<LeaderboardProps> = ({url, name, score}) => {

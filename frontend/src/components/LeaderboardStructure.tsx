@@ -4,9 +4,8 @@ import LeaderboardItem from './LeaderboardItem';
 import {key} from "ionicons/icons";
 
 interface UserDataType {
-    name: string;
-    url: string;
-    score: string;
+    pseudo: string;
+    eventsCount: Int16Array;
 }
 
 interface LeaderboardStructureProps {
@@ -17,9 +16,9 @@ const LeaderboardStructure: React.FC<LeaderboardStructureProps> = ({list}) => {
   return (
     <>
         {
-            list.map(({name,url,score}) => {
+            list.map(({pseudo,eventsCount}) => {
                 return (
-                    <LeaderboardItem key={name} name={name} url="https://ionicframework.com/docs/img/demos/avatar.svg" score={score}/>
+                    <LeaderboardItem key={pseudo} name={pseudo} url="https://ionicframework.com/docs/img/demos/avatar.svg" score={eventsCount}/>
                 )
             })
         }
