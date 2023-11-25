@@ -39,9 +39,9 @@ passport.use(new GitHubStrategy( {
       clientSecret: "14f9ed89365cdd5330d5023f117ddbad643f1a87",
       callbackURL: "http://localhost:3000/auth/github/callback"
     }, async (accessToken, refreshToken, profile, done) => {
-      console.log(accessToken);
-      console.log(refreshToken);
-      console.log(profile);
+      // console.log(accessToken);
+      // console.log(refreshToken);
+      // console.log(profile);
       let user = await prisma.user.findUnique({
         where: {
           id: profile.id,
@@ -91,7 +91,9 @@ app.get('/logout', (req, res) => {
   });
 });
 
-// Profile route
+// Get the profile of the user
+// If the user is not authenticated, redirect to '/'
+// Else, return the user
 app.get('/profile', (req, res) => {
   // Check if the user is authenticated
   if (req.isAuthenticated()) {
@@ -106,6 +108,9 @@ app.get('/profile', (req, res) => {
     }).then((user) => {
       console.log(user);
       res.json(user);
+    }).catch((err) => {
+      console.log(err);
+      res.json(err);
     });
   } else {
     res.redirect('/');
@@ -154,7 +159,49 @@ app.get('/ranking/users', (req, res) => {
   });
 });
 
-
+// GET all users with their number of events from a company
+app.get('/ranking/company/:companyName', (req, res) => {
+  if (!req.isAuthenticated()) {
+    res.redirect('/');
+  }
+  const company = req.params.companyName;
+  prisma.company.findUnique({
+    where: {
+      name: company,
+    },
+  }).catch((err) => {
+    console.log(err);
+    res.json(err);
+  }).then((company) => {
+    prisma.user.findMany({
+      where: {
+        company: {
+          name: company.name,
+        },
+      },
+      include: {
+        events: true,
+      },
+    }).then((users) => {
+      const usersWithEvents = users.map((user) => {
+        return {
+          ...user,
+          eventsCount: user.events.length,
+        };
+      });
+      const sortedUsers = usersWithEvents.sort((a, b) => {
+        return b.eventsCount - a.eventsCount;
+      });
+      let usr = sortedUsers.map((user) => {
+        return {
+          pseudo: user.pseudo,
+          eventsCount: user.eventsCount,
+        };
+      });
+      res.json(usr);
+    });
+  });
+});
 
 // Start server
 app.listen(port, () => {
