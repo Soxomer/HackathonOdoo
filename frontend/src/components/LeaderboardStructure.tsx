@@ -1,18 +1,29 @@
 import React from "react";
 import { IonRow, IonAvatar,IonLabel } from '@ionic/react';
 import LeaderboardItem from './LeaderboardItem';
+import {key} from "ionicons/icons";
 
-
-
-interface LeaderboardStructureProps {
+interface UserDataType {
+    name: string;
+    url: string;
+    score: string;
 }
 
-const LeaderboardStructure: React.FC<LeaderboardStructureProps> = () => {
+interface LeaderboardStructureProps {
+    list: UserDataType[];
+}
+
+const LeaderboardStructure: React.FC<LeaderboardStructureProps> = ({list}) => {
   return (
     <>
-        <LeaderboardItem name="test 1" url="https://ionicframework.com/docs/img/demos/avatar.svg" score="2000"/>
-        <LeaderboardItem name="test 2" url="https://ionicframework.com/docs/img/demos/avatar.svg" score="4000"/>
-        <LeaderboardItem name="test 3" url="https://ionicframework.com/docs/img/demos/avatar.svg" score="1500"/>
+        {
+            list.map(({name,url,score}) => {
+                return (
+                    <LeaderboardItem key={name} name={name} url="https://ionicframework.com/docs/img/demos/avatar.svg" score={score}/>
+                )
+            })
+        }
+
     </>
   );
 };

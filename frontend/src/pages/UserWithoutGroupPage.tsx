@@ -1,23 +1,19 @@
 import ExploreContainer from '../components/ExploreContainer';
 import './Home.css';
-import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar} from "@ionic/react";
 import React from "react";
+import Leaderboard from "../components/Leaderboard";
+import {IonContent, IonHeader, IonPage, IonToolbar} from "@ionic/react";
 
 const Home: React.FC = () => {
     return (
         <IonPage>
             <IonHeader>
                 <IonToolbar>
-                    <IonTitle>UserWithoutPage</IonTitle>
+                    // add button to join group
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>
-                <IonHeader collapse="condense">
-                    <IonToolbar>
-                        <IonTitle size="large">Blank</IonTitle>
-                    </IonToolbar>
-                </IonHeader>
-                <ExploreContainer />
+                <Leaderboard/>
             </IonContent>
         </IonPage>
     );
