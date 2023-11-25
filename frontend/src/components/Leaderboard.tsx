@@ -1,7 +1,7 @@
 // Leaderboard.tsx
 
 import React, {useEffect, useState} from 'react';
-import {IonContent, IonSegment, IonSegmentButton, IonTitle} from '@ionic/react';
+import {IonContent, IonLabel, IonSegment, IonSegmentButton, IonTitle} from '@ionic/react';
 import LeaderboardStructure from "./LeaderboardStructure";
 
 // async function getListBoitesVsBoites() {
@@ -65,13 +65,13 @@ const Leaderboard: React.FC = () => {
         <IonContent>
             <IonSegment onIonChange={handleSegmentChange}>
                 <IonSegmentButton value="tab1">
-                    <IonTitle>World</IonTitle>
+                    <IonLabel>World</IonLabel>
                 </IonSegmentButton>
                 <IonSegmentButton value="tab2">
-                    <IonTitle>Boite</IonTitle>
+                    <IonLabel>Boite</IonLabel>
                 </IonSegmentButton>
                 <IonSegmentButton value="tab3">
-                    <IonTitle>Boite Vs Boite</IonTitle>
+                    <IonLabel>Boite Vs Boite</IonLabel>
                 </IonSegmentButton>
             </IonSegment>
             <LeaderboardStructure list={leaderboardData}/>

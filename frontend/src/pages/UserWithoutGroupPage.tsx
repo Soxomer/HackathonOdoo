@@ -7,11 +7,6 @@ import {IonContent, IonHeader, IonPage, IonToolbar} from "@ionic/react";
 const Home: React.FC = () => {
     return (
         <IonPage>
-            <IonHeader>
-                <IonToolbar>
-                    // add button to join group
-                </IonToolbar>
-            </IonHeader>
             <IonContent fullscreen>
                 <Leaderboard/>
             </IonContent>
