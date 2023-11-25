@@ -15,7 +15,6 @@ const Profile: React.FC = () => {
           
           if (response.ok) {
             const result = await response.json();
-            console.log(result);
             setData(result);
           } else {
             console.error('Failed to fetch data from the backend');

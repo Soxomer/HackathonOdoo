@@ -22,7 +22,6 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
-import UserWithoutGroupPage from "./pages/UserWithoutGroupPage";
 
 setupIonicReact();
 
@@ -39,9 +38,6 @@ const App: React.FC = () => (
                 </Route>
                 <Route exact path="/auth">
                     <Test/>
-                </Route>
-                <Route exact path="/userwithoutgroup">
-                    <UserWithoutGroupPage />
                 </Route>
                 <Route exact path="/profile">
                     <Profile />

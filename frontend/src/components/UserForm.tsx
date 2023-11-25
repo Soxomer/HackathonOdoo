@@ -19,6 +19,41 @@ const UserForm: React.FC = () => {
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
+        // add new company to the list
+        if (input3 !== '') {
+            setListOfOffices([...listOfOffices, input3]);
+            // add new company to the backend
+            fetch('http://localhost:3000/company', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({name: input3}),
+            });
+        }
+        if (input1 !== '') {
+            // const repos = input1.map((repo: string) => {
+            //     return {fullname: repo}
+            // })
+            // fetch(`http://localhost:3000/profile/${Cookies.get('username')}`, {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //     },
+            //     body: JSON.stringify({repos}),
+            // });
+        }
+
+        if (input2 !== '') {
+            fetch(`http://localhost:3000/profile/${Cookies.get('username')}`, {
+            method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({office: input2}),
+            });
+        }
+
         console.log('Form submitted with inputs:', input1, input2, input3);
         // Add your logic to handle the form data
     };
@@ -26,45 +61,47 @@ const UserForm: React.FC = () => {
     const getListOfRepos = async () => {
         const username = Cookies.get('username');
         if (username === undefined) return;
-        const response = await fetch(`http://localhost:3000/user/${username}/repos`);
+        const user = await fetch(`http://localhost:3000/profile/${username}`)
+        const {token} = await user.json();
+        const response = await fetch("https://api.github.com/users/Soxomer/repos");
         const repos = await response.json();
         setListOfRepos(repos);
         return repos;
     }
 
-    const getListOfOffices = async () => {
-        const response = await fetch(`http://localhost:3000/offices`);
-        const offices = await response.json();
-        setListOfOffices(offices);
-        return offices;
+    const getListOfCompany = async () => {
+        const response = await fetch(`http://localhost:3000/company`);
+        const companies = await response.json();
+        setListOfOffices(companies);
+        return companies;
     }
 
-    useEffect( () => {
+    useEffect(() => {
         getListOfRepos();
-        getListOfOffices();
+        getListOfCompany();
     }, []);
     return (
         <form onSubmit={handleSubmit}>
             {/* Input 1 */}
             <IonSelect
                 placeholder="Select the repos you want to track"
-                value={input1}
                 multiple
                 onIonChange={(e) => setInput1(e.detail.value)}
             >
-                {listOfRepos.map((repo) => (
-                    <IonSelectOption key={repo} value={repo}>{repo}</IonSelectOption>
+                {listOfRepos.map((repo,index) => (
+                    // @ts-ignore
+                    <IonSelectOption key={index} value={repo.fullname}>{repo.name}</IonSelectOption>
                 ))}
             </IonSelect>
 
             {/* Input 2 */}
             <IonSelect
                 placeholder="Select the office you want to join"
-                value={input2}
                 onIonChange={(e) => setInput2(e.detail.value)}
             >
-                {listOfOffices.map((office) => (
-                    <IonSelectOption key={office} value={office}>{office}</IonSelectOption>
+                {listOfOffices.map((office, index) => (
+                    //@ts-ignore
+                    <IonSelectOption key={index} value={office.name}>{office.name}</IonSelectOption>
                 ))}
             </IonSelect>
 
@@ -75,6 +112,7 @@ const UserForm: React.FC = () => {
 
             {showInput3 && (
                 <IonInput
+                    onIonInput={(e: any) => setInput3(e.target.value)}
                     placeholder="Add your office">
                 </IonInput>
             )}

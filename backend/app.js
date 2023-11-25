@@ -24,9 +24,9 @@ app.use(parser.json())
 
 // Configure express-session
 app.use(session({
-  secret: 'Sup3rS3cur3!', // Use a strong and unique secret key
-  resave: true,
-  saveUninitialized: true,
+    secret: 'Sup3rS3cur3!', // Use a strong and unique secret key
+    resave: true,
+    saveUninitialized: true,
 }));
 
 app.use(passport.initialize());
@@ -35,27 +35,25 @@ app.use(bodyParser.json());
 
 // Serialize and deserialize user
 passport.serializeUser((user, done) => {
-  done(null, user);
+    done(null, user);
 });
 
 passport.deserializeUser((obj, done) => {
-  done(null, obj);
+    done(null, obj);
 });
 
 passport.use(new GitHubStrategy({
-      clientID: "Iv1.bffad14f85e00390",
-      clientSecret: "14f9ed89365cdd5330d5023f117ddbad643f1a87",
-      callbackURL: "http://localhost:3000/auth/github/callback"
+        clientID: "Iv1.bffad14f85e00390",
+        clientSecret: "14f9ed89365cdd5330d5023f117ddbad643f1a87",
+        callbackURL: "http://localhost:3000/auth/github/callback"
     }, async (accessToken, refreshToken, profile, done) => {
-      console.log(accessToken);
-      console.log(refreshToken);
-      console.log(profile);
-      let user = await prisma.user.findUnique({
-        where: {
-          id: profile.id,
-        },
-      });
-      if (await user) {
+
+        let user = await prisma.user.findUnique({
+            where: {
+                id: profile.id,
+            },
+        });
+        if (await user) {
         return done(null, profile);
       }
 
@@ -74,13 +72,13 @@ passport.use(new GitHubStrategy({
 ));
 
 app.all('/', function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "X-Requested-With");
-  next();
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    next();
 });
 
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+    res.send('Hello World!');
 })
 
 app.get('/auth/github',
@@ -90,18 +88,18 @@ app.get('/auth/github/callback',
     passport.authenticate('github',
         {failureRedirect: 'http://localhost:8100/error'}),
     function (req, res) {
-      res.cookie('username', req.user.username);
-      res.redirect("http://localhost:8100/");
+        res.cookie('username', req.user.username);
+        res.redirect("http://localhost:8100/");
     });
 
 // Logout route
 app.get('/logout', (req, res) => {
-  req.logout(function (err) {
-    if (err) {
-      return next(err);
-    }
-    res.redirect('http://localhost:8100/');
-  });
+    req.logout(function (err) {
+        if (err) {
+            return next(err);
+        }
+        res.redirect('http://localhost:8100/');
+    });
 });
 /**********************************USERS***************************************\
  *                                                                            *
@@ -111,22 +109,22 @@ app.get('/logout', (req, res) => {
 // If the user is not authenticated, redirect to '/'
 // Else, return the user
 app.get('/profile/:user', (req, res) => {
-  if (req.params.user != undefined) {
-    const userEvents = prisma.user.findUnique({
-      where: {
-        pseudo: req.params.user,
-      },
-      include: {
-        events: true,
-      },
-    }).then((user) => {
-      res.json(user);
-    }).catch((err) => {
-      res.json(err);
-    });
-  } else {
-    res.redirect('http://localhost:8100/');
-  }
+    if (req.params.user != undefined) {
+        const userEvents = prisma.user.findUnique({
+            where: {
+                pseudo: req.params.user,
+            },
+            include: {
+                events: true,
+            },
+        }).then((user) => {
+            res.json(user);
+        }).catch((err) => {
+            res.json(err);
+        });
+    } else {
+        res.redirect('http://localhost:8100/');
+    }
 });
 
 // PATCH the repos of the user
@@ -154,13 +152,13 @@ app.patch('/profile/:username/repos', (req, res) => {
 app.post('/event', async (req, res) => {
   const {type, creator} = req.body;
   const event = await prisma.event.findFirst({
-    where: {
-      type: type,
-      creatorId: creator,
+        where: {
+            type: type,
+            creatorId: creator,
     },
   });
-  if (event === null) {
-    // IF event doesn't exist, create it
+    if (event === null) {
+        // IF event doesn't exist, create it
     const newEvent = await prisma.event.create({
       data: {
         type: type,
@@ -180,8 +178,9 @@ app.post('/event', async (req, res) => {
     },
   });
   res.json(eventUpdate);
-  return;
+    return;
 });
+
 
 /*********************************RANKING*************************************\
  *                                                                            *
@@ -217,7 +216,7 @@ app.get('/ranking/users', async (req, res) => {
 
 // GET all users with their number of events from a company
 app.get('/ranking/company/:companyName', (req, res) => {
-  // if (!req.isAuthenticated()) {
+    // if (!req.isAuthenticated()) {
   //   res.redirect('/');
   //   return;
   // }
@@ -247,22 +246,44 @@ app.get('/ranking/company/:companyName', (req, res) => {
               (acc, event) => {
                 return acc + event.quantity;
               }, 0),
-        };
-      });
-      const sortedUsers = usersWithEvents.sort((a, b) => {
-        return b.eventSum - a.eventSum;
-      });
-      let usr = sortedUsers.map((user) => {
-        return {
-          pseudo: user.pseudo,
-          eventSum: user.eventSum,
-        };
-      });
-      res.json(usr);
+                };
+            });
+            const sortedUsers = usersWithEvents.sort((a, b) => {
+                return b.eventSum - a.eventSum;
+            });
+            let usr = sortedUsers.map((user) => {
+                return {
+                    pseudo: user.pseudo,
+                    eventSum: user.eventSum,
+                };
+            });
+            res.json(usr);
+        });
     });
-  });
 });
 
+
+app.get('/company', async (req, res) => {
+    const companies = await prisma.company.findMany();
+    res.json(companies);
+});
+
+app.post('/company', async (req, res) => {
+    const {name} = req.body;
+    const company = await prisma.company.findUnique({
+        where: {
+            name: name,
+        },
+    });
+    if (!company) {
+        await prisma.company.create({
+            data: {
+                name: name,
+            },
+        });
+    }
+    res.json(company);
+});
 // GET the events from all user of each company and sort them by descending order
 app.get('/ranking/company', async (req, res) => {
   const companies = await prisma.company.findMany({
@@ -309,6 +330,6 @@ app.get('/ranking/company', async (req, res) => {
 
 // Start server
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+    console.log(`Example app listening on port ${port}`)
 });
 
