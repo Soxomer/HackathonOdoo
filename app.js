@@ -25,36 +25,34 @@ passport.deserializeUser((obj, done) => {
 });
 
 passport.use(new GitHubStrategy({
-    clientID: "Iv1.bffad14f85e00390",
-    clientSecret: "14f9ed89365cdd5330d5023f117ddbad643f1a87",
-    callbackURL: "http://localhost:3000/auth/github/callback"
-  }, (accessToken, refreshToken, profile, done) => {
-    console.log(accessToken);
-    console.log(refreshToken);
-    console.log(profile);
-    return done(null, profile);
-  }
+        clientID: "Iv1.bffad14f85e00390",
+        clientSecret: "14f9ed89365cdd5330d5023f117ddbad643f1a87",
+        callbackURL: "http://localhost:3000/auth/github/callback"
+    }, (accessToken, refreshToken, profile, done) => {
+        return done(null, profile);
+    }
 ));
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
-  })
+})
 
 app.get('/auth/github',
-  passport.authenticate('github'));
+    passport.authenticate('github'));
 
-app.get('/auth/github/callback', 
-  passport.authenticate('github', { failureRedirect: '/login' }),
-  function(req, res) {
-    // Successful authentication, redirect home.
-    res.redirect('/');
-});
-
+app.get('/auth/github/callback',
+    passport.authenticate('github', {failureRedirect: '/login'}),
+    function (req, res) {
+        // Successful authentication, redirect home.
+        res.redirect('/');
+    });
 
 // Logout route
 app.get('/logout', (req, res) => {
-    req.logout(function(err) {
-        if (err) { return next(err); }
+    req.logout(function (err) {
+        if (err) {
+            return next(err);
+        }
         res.redirect('/');
     });
 });
@@ -69,6 +67,11 @@ app.get('/profile', (req, res) => {
     }
 });
 
+app.get('/webhook', (req, res) => {
+    console.log("webhook received")
+    console.log(req);
+});
+
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+    console.log(`Example app listening on port ${port}`)
 })
