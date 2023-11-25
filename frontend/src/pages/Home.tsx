@@ -1,6 +1,5 @@
-import { IonSegment, IonSegmentButton, IonLabel, IonGrid, IonRow, IonCol, IonIcon, IonButton, IonContent, IonPage, IonList } from '@ionic/react';
+import { IonGrid, IonRow, IonCol, IonIcon, IonButton, IonContent, IonPage } from '@ionic/react';
 import { logoGithub } from 'ionicons/icons';
-import LeaderboardStructure from '../components/LeaderboardStructure';
 import './Home.css';
 
 const Home: React.FC = () => {
@@ -19,7 +18,6 @@ const Home: React.FC = () => {
         </IonGrid>
         <IonGrid class="ion-justify-content-center">
         </IonGrid>
-        {/* <ExploreContainer /> */}
       </IonContent>
     </IonPage>
   );
