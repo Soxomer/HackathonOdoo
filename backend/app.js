@@ -148,50 +148,52 @@ app.post('/event', async (req, res) => {
   }
   // IF event already exists, increment quantity
   const eventUpdate = await prisma.event.update({
-      where: {
-        id: event.id,
-      },
-      data: {
-        quantity: event.quantity + 1,
-      },
-    });
+    where: {
+      id: event.id,
+    },
+    data: {
+      quantity: event.quantity + 1,
+    },
+  });
   res.json(eventUpdate);
   return;
 });
 
 /*********************************RANKING*************************************/
-// Count the number of events from all users and them by the number of events
-app.get('/ranking/users', (req, res) => {
-  prisma.user.findMany({
+// Sum the quantity of events for each user and sort them by descending order
+app.get('/ranking/users', async (req, res) => {
+  const users = await prisma.user.findMany({
     include: {
       events: true,
     },
-  }).then((users) => {
-    const usersWithEvents = users.map((user) => {
-      return {
-        ...user,
-        eventsCount: user.events.length,
-      };
-    });
-    const sortedUsers = usersWithEvents.sort((a, b) => {
-      return b.eventsCount - a.eventsCount;
-    });
-    let usr = sortedUsers.map((user) => {
-      return {
-        pseudo: user.pseudo,
-        eventsCount: user.eventsCount,
-      };
-    });
-    res.json(usr);
   });
+  const usersWithEvents = users.map((user) => {
+    return {
+      ...user,
+      eventSum: user.events.length === 0 ? 0 : user.events.reduce(
+          (acc, event) => {
+            return acc + event.quantity;
+          }, 0),
+    };
+  });
+  const sortedUsers = usersWithEvents.sort((a, b) => {
+    return b.eventSum - a.eventSum;
+  });
+  let usr = sortedUsers.map((user) => {
+    return {
+      pseudo: user.pseudo,
+      eventSum: user.eventSum,
+    };
+  });
+  res.json(usr);
 });
 
 // GET all users with their number of events from a company
 app.get('/ranking/company/:companyName', (req, res) => {
-  if (!req.isAuthenticated()) {
-    res.redirect('/');
-    return;
-  }
+  // if (!req.isAuthenticated()) {
+  //   res.redirect('/');
+  //   return;
+  // }
   const company = req.params.companyName;
   prisma.company.findUnique({
     where: {
@@ -214,16 +216,19 @@ app.get('/ranking/company/:companyName', (req, res) => {
       const usersWithEvents = users.map((user) => {
         return {
           ...user,
-          eventsCount: user.events.length,
+          eventSum: user.events.length === 0 ? 0 : user.events.reduce(
+              (acc, event) => {
+                return acc + event.quantity;
+              }, 0),
         };
       });
       const sortedUsers = usersWithEvents.sort((a, b) => {
-        return b.eventsCount - a.eventsCount;
+        return b.eventSum - a.eventSum;
       });
       let usr = sortedUsers.map((user) => {
         return {
           pseudo: user.pseudo,
-          eventsCount: user.eventsCount,
+          eventSum: user.eventSum,
         };
       });
       res.json(usr);
@@ -231,8 +236,52 @@ app.get('/ranking/company/:companyName', (req, res) => {
   });
 });
 
+// GET the events from all user of each company and sort them by descending order
+app.get('/ranking/company', async (req, res) => {
+  const companies = await prisma.company.findMany({
+        include: {
+          users: {
+            include: {
+              events: true,
+            },
+          },
+        },
+      }
+  );
+  const companiesWithEvents = companies.map((company) => {
+    return {
+      ...company,
+      events: company.users?.length === 0 || company.users === null
+      || company.users === undefined ? [] : company.users.reduce(
+          (acc, user) => {
+            console.log(user.events)
+            return acc.concat(user.events);
+          }, []),
+    };
+  });
+  const companiesWithEventsSum = companiesWithEvents.map((company) => {
+    return {
+      ...company,
+      eventSum: company.events.length === 0 ? 0 : company.events.reduce(
+          (acc, event) => {
+            return acc + event.quantity;
+          }, 0),
+    };
+  });
+  const sortedCompanies = companiesWithEventsSum.sort((a, b) => {
+    return b.eventSum - a.eventSum;
+  });
+  let cmp = sortedCompanies.map((company) => {
+    return {
+      name: company.name,
+      eventSum: company.eventSum,
+    };
+  });
+  res.json(cmp);
+});
+
 // Start server
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
-})
+});
 
