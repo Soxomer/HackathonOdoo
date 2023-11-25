@@ -1,6 +1,5 @@
-import { IonSegment, IonSegmentButton, IonLabel, IonGrid, IonRow, IonCol, IonIcon, IonButton, IonContent, IonPage, IonList } from '@ionic/react';
+import { IonGrid, IonRow, IonCol, IonIcon, IonButton, IonContent, IonPage } from '@ionic/react';
 import { logoGithub } from 'ionicons/icons';
-import LeaderboardStructure from '../components/LeaderboardStructure';
 import './Home.css';
 
 const Home: React.FC = () => {
@@ -10,7 +9,7 @@ const Home: React.FC = () => {
         <IonGrid fixed={true}>
           <IonRow class="ion-justify-content-center">
             <IonCol size="12" size-md="4">
-            <IonButton expand="full" shape="round" color="dark">
+            <IonButton href="http://localhost:3000/auth/github" expand="full" shape="round" color="dark">
               <IonIcon slot="start" icon={ logoGithub }></IonIcon>
               Sign in with Github
             </IonButton>
@@ -19,7 +18,6 @@ const Home: React.FC = () => {
         </IonGrid>
         <IonGrid class="ion-justify-content-center">
         </IonGrid>
-        {/* <ExploreContainer /> */}
       </IonContent>
     </IonPage>
   );

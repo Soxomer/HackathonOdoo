@@ -1,5 +1,6 @@
 const express = require('express');
 const passport = require("passport");
+const cors = require("cors");
 const app = express()
 const port = 3000
 const GitHubStrategy = require('passport-github').Strategy;
@@ -7,6 +8,12 @@ const session = require('express-session');
 const {PrismaClient} = require("@prisma/client");
 
 const prisma = new PrismaClient()
+
+
+// use it before all route definitions
+app.use(cors());
+
+
 
 // Configure express-session
 app.use(session({
@@ -53,6 +60,12 @@ passport.use(new GitHubStrategy( {
       return done(null, profile);
     }
 ));
+
+app.all('/', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next();
+});
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
