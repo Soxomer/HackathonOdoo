@@ -1,6 +1,6 @@
 import ExploreContainer from '../components/ExploreContainer';
 import './Home.css';
-import React from "react";
+import React , { useEffect }from "react";
 import Leaderboard from "../components/Leaderboard";
 import {IonContent, IonHeader, IonPage, IonToolbar} from "@ionic/react";
 
