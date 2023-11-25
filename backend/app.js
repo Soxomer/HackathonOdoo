@@ -96,7 +96,17 @@ app.get('/profile', (req, res) => {
   // Check if the user is authenticated
   if (req.isAuthenticated()) {
     console.log("is authenticated");
-    res.send(`<h1>Hello ${req.user.username}</h1><a href="/logout">Logout</a>`);
+    const userEvents = prisma.user.findUnique({
+      where: {
+        id: req.user.id,
+      },
+      include: {
+        events: true,
+      },
+    }).then((user) => {
+      console.log(user);
+      res.json(user);
+    });
   } else {
     res.redirect('/');
   }
@@ -117,6 +127,7 @@ app.post('/event/', (req, res) => {
   res.json(event);
 });
 
+/*********************************RANKING*************************************/
 // Count the number of events from all users and them by the number of events
 app.get('/ranking/users', (req, res) => {
   prisma.user.findMany({
