@@ -125,7 +125,10 @@ app.get('/profile/:user', (req, res) => {
     res.redirect('http://localhost:8100/');
   }
 });
-
+/*********************************EVENTS**************************************\
+ *                                                                            *
+ *                                                                            *
+ \*****************************************************************************/
 // Create a new event
 app.post('/event', async (req, res) => {
   const {type, creator} = req.body;
@@ -159,7 +162,10 @@ app.post('/event', async (req, res) => {
   return;
 });
 
-/*********************************RANKING*************************************/
+/*********************************RANKING*************************************\
+ *                                                                            *
+ *                                                                            *
+\*****************************************************************************/
 // Sum the quantity of events for each user and sort them by descending order
 app.get('/ranking/users', async (req, res) => {
   const users = await prisma.user.findMany({
