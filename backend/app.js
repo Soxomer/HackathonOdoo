@@ -9,6 +9,7 @@ const GitHubStrategy = require('passport-github').Strategy;
 const session = require('express-session');
 const {PrismaClient} = require("@prisma/client");
 const bodyParser = require('body-parser');
+const {log} = require("prisma/prisma-client/generator-build");
 
 const prisma = new PrismaClient()
 
@@ -103,6 +104,7 @@ app.get('/logout', (req, res) => {
     res.redirect('http://localhost:8100/');
   });
 });
+
 /**********************************USERS***************************************\
  *                                                                            *
  *                                                                            *
@@ -129,16 +131,25 @@ app.get('/profile/:user', (req, res) => {
   }
 });
 
-// PATCH the repos of the user
-app.patch('/profile/:username/repos', (req, res) => {
-  const repos = req.body.repos;
+// PATCH the company of the user
+app.patch('/profile/:username/company', async(req, res) => {
   const username = req.params.username;
+  const companyName = req.body.company;
+  const company = await prisma.company.findUnique({
+    where: {
+      name: companyName,
+    },
+  });
+  if (company === null) {
+    res.status(404).send('Company not found');
+    return;
+  }
   prisma.user.update({
     where: {
       pseudo: username,
     },
     data: {
-      repos: repos,
+      companyId: company.id,
     },
   }).then((user) => {
     res.json(user);
@@ -150,6 +161,7 @@ app.patch('/profile/:username/repos', (req, res) => {
  *                                                                            *
  *                                                                            *
  \*****************************************************************************/
+
 // Create a new event
 app.post('/event', async (req, res) => {
   const {type, creator} = req.body;
