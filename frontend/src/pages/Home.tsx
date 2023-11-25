@@ -1,6 +1,4 @@
-import { IonGrid, IonRow, IonCol, IonIcon, IonButton, IonContent, IonPage } from '@ionic/react';
-import { logoGithub } from 'ionicons/icons';
-import {IonButton, IonButtons, IonCol, IonContent, IonGrid, IonIcon, IonPage, IonRow, IonToolbar} from '@ionic/react';
+import { IonGrid, IonRow, IonCol, IonIcon, IonButton, IonContent, IonPage } from '@ionic/react'
 import {logoGithub, logOut, personCircleOutline} from 'ionicons/icons';
 import Cookies from "js-cookie";
 import './Home.css';
