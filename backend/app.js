@@ -2,6 +2,7 @@ const express = require('express');
 const passport = require("passport");
 const cors = require("cors");
 const app = express()
+const cookieParser = require('cookie-parser');
 const port = 3000
 const GitHubStrategy = require('passport-github').Strategy;
 const session = require('express-session');
@@ -12,8 +13,7 @@ const prisma = new PrismaClient()
 
 // use it before all route definitions
 app.use(cors());
-
-
+app.use(cookieParser());
 
 // Configure express-session
 app.use(session({
@@ -68,17 +68,17 @@ app.all('/', function(req, res, next) {
 });
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('Hello World!');
 })
 
 app.get('/auth/github',
     passport.authenticate('github'));
 
 app.get('/auth/github/callback',
-    passport.authenticate('github', {failureRedirect: '/login'}),
+    passport.authenticate('github', {failureRedirect: 'http://localhost:8100/error'}),
     function (req, res) {
-      // Successful authentication, redirect home.
-      res.redirect('/');
+      res.cookie('username', req.user.username);
+      res.redirect("http://localhost:8100/");
     });
 
 // Logout route
@@ -87,7 +87,7 @@ app.get('/logout', (req, res) => {
     if (err) {
       return next(err);
     }
-    res.redirect('/');
+    res.redirect('http://localhost:8100/');
   });
 });
 
