@@ -67,13 +67,13 @@ const Leaderboard: React.FC = () => {
         <IonContent>
             <IonSegment onIonChange={handleSegmentChange}>
                 <IonSegmentButton value="tab1">
-                    <IonTitle>Tab 1</IonTitle>
+                    <IonTitle>World</IonTitle>
                 </IonSegmentButton>
                 <IonSegmentButton value="tab2">
-                    <IonTitle>Tab 2</IonTitle>
+                    <IonTitle>Boite</IonTitle>
                 </IonSegmentButton>
                 <IonSegmentButton value="tab3">
-                    <IonTitle>Tab 3</IonTitle>
+                    <IonTitle>Boite Vs Boite</IonTitle>
                 </IonSegmentButton>
             </IonSegment>
             <LeaderboardStructure list={leaderboardData}/>
