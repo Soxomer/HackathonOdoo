@@ -9,11 +9,13 @@
         <outputRelativeToContentRoot value="true" />
         <module name="eureka" />
         <module name="users" />
+        <module name="authentication" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="authentication" options="-parameters" />
       <module name="eureka" options="-parameters" />
       <module name="users" options="-parameters" />
     </option>
