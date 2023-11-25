@@ -5,11 +5,11 @@ import {IonContent, IonLabel, IonSegment, IonSegmentButton, IonTitle} from '@ion
 import LeaderboardStructure from "./LeaderboardStructure";
 
 interface LeaderboardProps {
-    tab: string;
+    usersData: any;
 }
 
-const Leaderboard: React.FC = () => {
-    const [leaderboardData, setLeaderboardData] = useState<any[]>([]);
+const Leaderboard: React.FC<LeaderboardProps> = ({usersData}) => {
+    const [LeaderboardData, setLeaderboardData] = useState<any[]>([]);
     const [selectedSegment, setSelectedSegment] = useState<string>('tab1');
 
     const handleSegmentChange = (event: CustomEvent) => {
@@ -19,29 +19,18 @@ const Leaderboard: React.FC = () => {
 
     useEffect(() => {
         console.log('useEffect')
-        // Fetch leaderboard data from your API
-        // For now, let's use a sample data
-        // const leaderBoardBoites = await getListBoitesVsBoites();
-        // const leaderBoardUsers =await  getListUsersVsUsers();
-        // const leaderBoardUsersBoites =await  getListUsersBoitesVsUsersBoites();
         let data: any = [];
         if (selectedSegment === 'tab1') {
-            data = [
-                {name: 'Tab1 User1', score: 100},
-                {name: 'Tab1 User2', score: 90},
-                // Add more users for Tab 1...
-            ];
+            data = usersData;
         } else if (selectedSegment === 'tab2') {
             data = [
                 {name: 'Tab2 User1', score: 80},
                 {name: 'Tab2 User2', score: 70},
-                // Add more users for Tab 2...
             ];
         } else if (selectedSegment === 'tab3') {
             data = [
                 {name: 'Tab3 User1', score: 60},
                 {name: 'Tab3 User2', score: 50},
-                // Add more users for Tab 3...
             ];
         }
         setLeaderboardData(data);
@@ -49,7 +38,7 @@ const Leaderboard: React.FC = () => {
 
     return (
         <IonContent>
-            <IonSegment onIonChange={handleSegmentChange}>
+            <IonSegment onLoad={handleSegmentChange} onIonChange={handleSegmentChange}>
                 <IonSegmentButton value="tab1">
                     <IonLabel>World</IonLabel>
                 </IonSegmentButton>
@@ -60,7 +49,7 @@ const Leaderboard: React.FC = () => {
                     <IonLabel>Boite Vs Boite</IonLabel>
                 </IonSegmentButton>
             </IonSegment>
-            <LeaderboardStructure list={leaderboardData}/>
+            <LeaderboardStructure list={LeaderboardData}/>
         </IonContent>
     );
 };
