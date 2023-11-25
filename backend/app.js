@@ -47,9 +47,6 @@ passport.use(new GitHubStrategy({
       clientSecret: "14f9ed89365cdd5330d5023f117ddbad643f1a87",
       callbackURL: "http://localhost:3000/auth/github/callback"
     }, async (accessToken, refreshToken, profile, done) => {
-      console.log(accessToken);
-      console.log(refreshToken);
-      console.log(profile);
       let user = await prisma.user.findUnique({
         where: {
           id: profile.id,
@@ -68,7 +65,6 @@ passport.use(new GitHubStrategy({
           urlAvatar: profile._json.avatar_url,
         },
       });
-      console.log(await user);
       return done(null, profile);
     }
 ));
@@ -281,7 +277,6 @@ app.get('/ranking/company', async (req, res) => {
       events: company.users?.length === 0 || company.users === null
       || company.users === undefined ? [] : company.users.reduce(
           (acc, user) => {
-            console.log(user.events)
             return acc.concat(user.events);
           }, []),
     };

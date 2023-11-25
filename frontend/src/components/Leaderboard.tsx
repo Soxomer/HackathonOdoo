@@ -38,7 +38,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({usersData}) => {
 
     return (
         <IonContent>
-            <IonSegment onLoad={handleSegmentChange} onIonChange={handleSegmentChange}>
+            <IonSegment onIonChange={handleSegmentChange}>
                 <IonSegmentButton value="tab1">
                     <IonLabel>World</IonLabel>
                 </IonSegmentButton>
