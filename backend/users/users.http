@@ -1,0 +1,12 @@
+### Create user
+POST http://localhost:9001/users/bob
+Content-Type: application/json
+
+{
+    "pseudo": "bob",
+    "token": "1234567890",
+    "company": "company"
+}
+
+### Get user bob
+GET http://localhost:9001/users/bob
