@@ -58,8 +58,6 @@ const Leaderboard: React.FC = () => {
                 // Add more users for Tab 3...
             ];
         }
-        console.log(selectedSegment);
-        console.log(data);
         setLeaderboardData(data);
     }, [selectedSegment]);
 
