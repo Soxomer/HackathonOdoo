@@ -1,12 +1,20 @@
-import { IonGrid, IonRow, IonCol, IonIcon, IonButton, IonContent, IonPage, IonList } from '@ionic/react';
+import { IonSegment, IonSegmentButton, IonLabel, IonGrid, IonRow, IonCol, IonIcon, IonButton, IonContent, IonPage, IonList } from '@ionic/react';
 import { logoGithub } from 'ionicons/icons';
-import LeaderboardItem from '../components/LeaderboardItem';
+import LeaderboardStructure from '../components/LeaderboardStructure';
 import './Home.css';
 
 const Home: React.FC = () => {
   return (
     <IonPage>
       <IonContent>
+      <IonSegment value="default">
+        <IonSegmentButton value="default">
+          <IonLabel>Default</IonLabel>
+        </IonSegmentButton>
+        <IonSegmentButton value="segment">
+          <IonLabel>Segment</IonLabel>
+        </IonSegmentButton>
+      </IonSegment>
         <IonGrid fixed={true}>
           <IonRow class="ion-justify-content-center">
             <IonCol size="12" size-md="4">
@@ -17,10 +25,9 @@ const Home: React.FC = () => {
             </IonCol>
           </IonRow>
         </IonGrid>
-        <IonList>
-        <LeaderboardItem name="test" url="2" />
-
-        </IonList>
+        <IonGrid class="ion-justify-content-center">
+          <LeaderboardStructure />
+        </IonGrid>
         {/* <ExploreContainer /> */}
       </IonContent>
     </IonPage>
