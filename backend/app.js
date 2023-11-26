@@ -61,7 +61,7 @@ passport.use(new GitHubStrategy({
             token: accessToken,
           },
         });
-        done(null, { accessToken: accessToken, profile: profile });
+        done(null, {accessToken: accessToken, profile: profile});
         return;
       }
       await prisma.user.create({
@@ -73,12 +73,15 @@ passport.use(new GitHubStrategy({
           urlAvatar: profile._json.avatar_url,
         },
       })
-      done(null, { accessToken: accessToken, profile: profile });
+      done(null, {accessToken: accessToken, profile: profile});
     }
 ));
 
-app.all('/', function (req, res, next) {
+app.all('*', function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods",
+      'GET,PUT,POST,DELETE,PATCH,OPTIONS')
+  res.header("Access-Control-Allow-Credentials", 'true');
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   next();
 });
@@ -93,16 +96,68 @@ app.get('/auth/github/callback',
     passport.authenticate('github',
         {failureRedirect: 'http://localhost:8100/error'}),
     function (req, res) {
-      res.cookie('username', req.user.profile.username);
       res.cookie('github_token', req.user.accessToken);
+      res.cookie('username', req.user.profile.username, {
+        httpOnly: false, // This is recommended for security
+        sameSite: 'None', // Allow cross-site requests
+        secure: true, // Set to true if your application is served over HTTPS
+      });
       res.redirect("http://localhost:8100/");
     });
 
 /**********************************HOME***************************************\
  *                                                                            *
-\*****************************************************************************/
+ \*****************************************************************************/
 app.get('/', (req, res) => {
   res.send('Hello World!');
+})
+
+app.post('/', async (req, res) => {
+  let creator;
+  const type = req.header('X-GitHub-Event');
+
+  const parsedPayload = JSON.parse(req.body?.payload)
+  switch (type) {
+    case 'push':
+      const pusher = parsedPayload.pusher?.name;
+      creator = await prisma.user.findUnique({
+        where: {
+          pseudo: pusher,
+        },
+      });
+      break;
+
+  }
+
+  const event = await prisma.event.findFirst({
+    where: {
+      type: type,
+      creatorId: creator.id,
+    },
+  });
+  console.log(event)
+  if (event === null) {
+    // IF event doesn't exist, create it
+    const newEvent = await prisma.event.create({
+      data: {
+        type: type,
+        creatorId: creator.id,
+      },
+    });
+    res.json(newEvent);
+    return;
+  }
+  // IF event already exists, increment quantity
+  const eventUpdate = await prisma.event.update({
+    where: {
+      id: event.id,
+    },
+    data: {
+      quantity: event.quantity + 1,
+    },
+  });
+  res.json(eventUpdate);
+  return;
 })
 
 // Logout route
@@ -129,7 +184,7 @@ app.get('/profile/:user', (req, res) => {
       },
       include: {
         events: true,
-        company:true
+        company: true
       },
     }).then((user) => {
       res.json(user);
@@ -172,7 +227,7 @@ app.patch('/profile/:username', async (req, res) => {
  *                                                                            *
  *                                                                            *
  \*****************************************************************************/
- app.post('/webhook/create/:username', async (req, res) => {
+app.post('/webhook/create/:username', async (req, res) => {
   let token;
   let pseudo;
   if (req.params.username != undefined) {
@@ -188,22 +243,23 @@ app.patch('/profile/:username', async (req, res) => {
       pseudo = user.pseudo;
       console.log(token);
       req.body.repos.map(async (item) => {
-      let test = await fetch(`https://api.github.com/repos/${pseudo}/${item.fullname}/hooks`, {
-        method: "POST",
-        headers: {
-          "Accept": "application/vnd.github+json",
-          "Authorization": `Bearer ${token}`,
-          "X-GitHub-Api-Version": "2022-11-28",
-          "Content-Type": "application/json"  // Add this line to specify the content type
-        },
-        body: JSON.stringify({
-          config: {
-            url: "http://nique-ta-mere.com:10/"
-          },
-          events:["*"]
-        })
+        let test = await fetch(
+            `https://api.github.com/repos/${pseudo}/${item.fullname}/hooks`, {
+              method: "POST",
+              headers: {
+                "Accept": "application/vnd.github+json",
+                "Authorization": `Bearer ${token}`,
+                "X-GitHub-Api-Version": "2022-11-28",
+                "Content-Type": "application/json"  // Add this line to specify the content type
+              },
+              body: JSON.stringify({
+                config: {
+                  url: "http://nique-ta-mere.com:10/"
+                },
+                events: ["*"]
+              })
+            });
       });
-    });
     }).catch((err) => {
       res.json(err);
     });
@@ -255,31 +311,31 @@ app.post('/event', async (req, res) => {
  \*****************************************************************************/
 // Sum the quantity of events for each user and sort them by descending order
 app.get('/ranking/users', async (req, res) => {
-    const users = await prisma.user.findMany({
-        include: {
-            events: true,
-        },
-    });
-    const usersWithEvents = users.map((user) => {
-        return {
-            ...user,
-            eventSum: user.events.length === 0 ? 0 : user.events.reduce(
-                (acc, event) => {
-                    return acc + event.quantity;
-                }, 0),
-        };
-    });
-    const sortedUsers = usersWithEvents.sort((a, b) => {
-        return b.eventSum - a.eventSum;
-    });
-    let usr = sortedUsers.map((user) => {
-        return {
-            pseudo: user.pseudo,
-            eventSum: user.eventSum,
-            urlAvatar:user.urlAvatar
-        };
-    });
-    res.json(usr);
+  const users = await prisma.user.findMany({
+    include: {
+      events: true,
+    },
+  });
+  const usersWithEvents = users.map((user) => {
+    return {
+      ...user,
+      eventSum: user.events.length === 0 ? 0 : user.events.reduce(
+          (acc, event) => {
+            return acc + event.quantity;
+          }, 0),
+    };
+  });
+  const sortedUsers = usersWithEvents.sort((a, b) => {
+    return b.eventSum - a.eventSum;
+  });
+  let usr = sortedUsers.map((user) => {
+    return {
+      pseudo: user.pseudo,
+      eventSum: user.eventSum,
+      urlAvatar: user.urlAvatar
+    };
+  });
+  res.json(usr);
 });
 
 // GET all users with their number of events from a company
