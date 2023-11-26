@@ -11,7 +11,7 @@ const UserForm: React.FC = () => {
     const [input3, setInput3] = useState<string>('');
 
     const [listOfRepos, setListOfRepos] = useState<string[]>([])
-    const [listOfOffices, setListOfOffices] = useState<string[]>([])
+    const [listOfcompanies, setListOfcompanies] = useState<string[]>([])
 
     const handleButtonPress = () => {
         setShowInput3(!showInput3);
@@ -21,7 +21,7 @@ const UserForm: React.FC = () => {
         event.preventDefault();
         // add new company to the list
         if (input3 !== '') {
-            setListOfOffices([...listOfOffices, input3]);
+            setListOfcompanies([...listOfcompanies, input3]);
             // add new company to the backend
             fetch('http://localhost:3000/company', {
                 method: 'POST',
@@ -72,7 +72,7 @@ const UserForm: React.FC = () => {
     const getListOfCompany = async () => {
         const response = await fetch(`http://localhost:3000/company`);
         const companies = await response.json();
-        setListOfOffices(companies);
+        setListOfcompanies(companies);
         return companies;
     }
 
@@ -99,7 +99,7 @@ const UserForm: React.FC = () => {
                 placeholder="Select the office you want to join"
                 onIonChange={(e) => setInput2(e.detail.value)}
             >
-                {listOfOffices.map((office, index) => (
+                {listOfcompanies.map((office, index) => (
                     //@ts-ignore
                     <IonSelectOption key={index} value={office.name}>{office.name}</IonSelectOption>
                 ))}
