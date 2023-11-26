@@ -59,7 +59,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({usersData,groupData}) => {
 
     return (
             <IonContent>
-                <IonSegment onIonChange={handleSegmentChange}>
+                <IonSegment className='ion-margin-bottom' onIonChange={handleSegmentChange}>
                     <IonSegmentButton value="tab1">
                         <IonLabel>Worldwide</IonLabel>
                     </IonSegmentButton>
