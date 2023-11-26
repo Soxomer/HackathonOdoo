@@ -272,7 +272,7 @@ app.post('/webhook/create/:username', async (req, res) => {
               },
               body: JSON.stringify({
                 config: {
-                  url: "http://nique-ta-mere.com:10/"
+                  url: "https://evolving-keen-boxer.ngrok-free.app",
                 },
                 events: ["*"]
               })
