@@ -89,47 +89,49 @@ const UserForm: React.FC = () => {
     getListOfRepos();
     getListOfCompany();
   }, []);
-  return (
-      <form onSubmit={handleSubmit}>
-        {/* Input 1 */}
-        <IonSelect
-            placeholder="Select the repos you want to track"
-            multiple
-            onIonChange={(e) => setInput1(e.detail.value)}
-        >
-          {listOfRepos.map((repo, index) => (
-              // @ts-ignore
-              <IonSelectOption key={index} value={repo.fullname}>{repo.name}</IonSelectOption>
-          ))}
-        </IonSelect>
+    return (
+        <form onSubmit={handleSubmit}>
+            {/* Input 1 */}
+            <IonSelect label="Select the repos you want us to track" labelPlacement="stacked"
+                placeholder="My super duper repo"
+                multiple
+                onIonChange={(e) => setInput1(e.detail.value)}
+            >
+                {listOfRepos.map((repo,index) => (
+                    // @ts-ignore
+                    <IonSelectOption key={index} value={repo.fullname}>{repo.name}</IonSelectOption>
+                ))}
+            </IonSelect>
 
-        {/* Input 2 */}
-        <IonSelect
-            placeholder="Select the office you want to join"
-            onIonChange={(e) => setInput2(e.detail.value)}
-        >
-          {listOfcompanies.map((office, index) => (
-              //@ts-ignore
-              <IonSelectOption key={index} value={office.name}>{office.name}</IonSelectOption>
-          ))}
-        </IonSelect>
+            {/* Input 2 */}
+            <IonSelect label="Select the group you'd like to be a part of" labelPlacement="stacked"
+                placeholder="My awesome group"
+                onIonChange={(e) => setInput2(e.detail.value)}
+            >
+                {listOfcompanies.map((office, index) => (
+                    //@ts-ignore
+                    <IonSelectOption key={index} value={office.name}>{office.name}</IonSelectOption>
+                ))}
+            </IonSelect>
 
-        {/* Input 3 */}
-        <IonInput onClick={handleButtonPress}>
-          {showInput3 ? 'Don\'t add your office' : 'Add your office'}
-        </IonInput>
+            {showInput3 && (
+                <IonInput label="Select the group you'd like to be a part of" labelPlacement="stacked"
+                    onIonInput={(e: any) => setInput3(e.target.value)}
+                    placeholder="Odoo ?!">
+                </IonInput>
+            )}
 
-        {showInput3 && (
-            <IonInput
-                onIonInput={(e: any) => setInput3(e.target.value)}
-                placeholder="Add your office">
-            </IonInput>
-        )}
+            {/* Input 3 */}
+            <IonButton className="ion-margin-top" onClick={handleButtonPress}>
+                {showInput3 ? 'Hide \"Add group\" input' : 'Show \"Add group\" input'}
+            </IonButton>
 
-        {/* Submit button */}
-        <IonButton type="submit">Submit</IonButton>
-      </form>
-  );
+
+
+            {/* Submit button */}
+            <IonButton className="ion-margin-top" type="submit">Submit</IonButton>
+        </form>
+    );
 };
 
 export default UserForm;
