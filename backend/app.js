@@ -66,7 +66,6 @@ passport.use(new GitHubStrategy({
                 urlAvatar: profile._json.avatar_url,
             },
         });
-        console.log(await user);
         return done(null, profile);
     }
 ));
