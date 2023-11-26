@@ -59,21 +59,16 @@ const UserForm: React.FC = () => {
   };
 
   const getListOfRepos = async () => {
-    const username = Cookies.get('username');
-    if (username === undefined) return;
-    const user = await fetch(`http://localhost:3000/profile/${username}`)
-    console.log(user)
-    const {token} = await user.json();
-    console.log(token)
-    const response = await fetch(`https://api.github.com/users/${username}/repos`, {
+    const token = Cookies.get('github_token');
+    const response = await fetch(`https://api.github.com/user/repos`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+        'Authorization': `Bearer ${token}`
       }
     });
     const repos = await response.json();
-    console.log(repos);
     setListOfRepos(repos);
     return repos;
   }

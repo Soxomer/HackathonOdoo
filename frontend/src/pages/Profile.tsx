@@ -1,17 +1,17 @@
 import {IonAvatar, IonCol, IonContent, IonGrid, IonLabel, IonPage, IonRow} from "@ionic/react";
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import Cookies from 'js-cookie';
 import Header from "../components/Header";
 import './Profile.css';
 
 const Profile: React.FC = () => {
     const [data, setData] = useState([]);
-    const token = Cookies.get("username");
+    const username = Cookies.get("username");
 
     useEffect(() => {
       const fetchData = async () => {
         try {
-          const response = await fetch('http://localhost:3000/profile/' + token);
+          const response = await fetch('http://localhost:3000/profile/' + username);
           
           if (response.ok) {
             const result = await response.json();
