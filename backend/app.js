@@ -9,6 +9,7 @@ const GitHubStrategy = require('passport-github2').Strategy;
 const session = require('express-session');
 const {PrismaClient} = require("@prisma/client");
 const bodyParser = require('body-parser');
+const {add} = require("nodemon/lib/rules");
 
 const prisma = new PrismaClient()
 
@@ -115,7 +116,7 @@ app.get('/', (req, res) => {
 app.post('/', async (req, res) => {
   let creator;
   const type = req.header('X-GitHub-Event');
-
+  let addValue = 1;
   const parsedPayload = JSON.parse(req.body?.payload)
   switch (type) {
     case 'push':
@@ -126,7 +127,24 @@ app.post('/', async (req, res) => {
         },
       });
       break;
-
+    case 'star':
+      if (parsedPayload.action === 'deleted') {
+        addValue = -3;
+      } else {
+        addValue = 3;
+      }
+      const login = parsedPayload.repository?.owner?.login;
+      console.log("LOGIN")
+      console.log(login);
+      creator = await prisma.user.findUnique({
+        where: {
+          pseudo: login,
+        },
+      });
+      break;
+    default:
+      res.status(404).send('Event not found');
+      return;
   }
 
   const event = await prisma.event.findFirst({
@@ -153,7 +171,7 @@ app.post('/', async (req, res) => {
       id: event.id,
     },
     data: {
-      quantity: event.quantity + 1,
+      quantity: event.quantity + addValue,
     },
   });
   res.json(eventUpdate);
