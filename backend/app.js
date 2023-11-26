@@ -211,30 +211,31 @@ app.post('/event', async (req, res) => {
  \*****************************************************************************/
 // Sum the quantity of events for each user and sort them by descending order
 app.get('/ranking/users', async (req, res) => {
-  const users = await prisma.user.findMany({
-    include: {
-      events: true,
-    },
-  });
-  const usersWithEvents = users.map((user) => {
-    return {
-      ...user,
-      eventSum: user.events.length === 0 ? 0 : user.events.reduce(
-          (acc, event) => {
-            return acc + event.quantity;
-          }, 0),
-    };
-  });
-  const sortedUsers = usersWithEvents.sort((a, b) => {
-    return b.eventSum - a.eventSum;
-  });
-  let usr = sortedUsers.map((user) => {
-    return {
-      pseudo: user.pseudo,
-      eventSum: user.eventSum,
-    };
-  });
-  res.json(usr);
+    const users = await prisma.user.findMany({
+        include: {
+            events: true,
+        },
+    });
+    const usersWithEvents = users.map((user) => {
+        return {
+            ...user,
+            eventSum: user.events.length === 0 ? 0 : user.events.reduce(
+                (acc, event) => {
+                    return acc + event.quantity;
+                }, 0),
+        };
+    });
+    const sortedUsers = usersWithEvents.sort((a, b) => {
+        return b.eventSum - a.eventSum;
+    });
+    let usr = sortedUsers.map((user) => {
+        return {
+            pseudo: user.pseudo,
+            eventSum: user.eventSum,
+            urlAvatar:user.urlAvatar
+        };
+    });
+    res.json(usr);
 });
 
 // GET all users with their number of events from a company
