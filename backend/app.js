@@ -129,6 +129,7 @@ app.get('/profile/:user', (req, res) => {
       },
       include: {
         events: true,
+        company:true
       },
     }).then((user) => {
       res.json(user);
