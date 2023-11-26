@@ -12,6 +12,7 @@ interface LeaderboardProps {
 const Leaderboard: React.FC<LeaderboardProps> = ({usersData}) => {
     const [LeaderboardData, setLeaderboardData] = useState<any[]>([]);
     const [selectedSegment, setSelectedSegment] = useState<string>('tab1');
+    const [labelGroupe, setLabelGroup] =useState<String>('');
 
     const handleSegmentChange = async (event: CustomEvent) => {
         setSelectedSegment(event.detail.value);
@@ -34,8 +35,13 @@ const Leaderboard: React.FC<LeaderboardProps> = ({usersData}) => {
                 {pseudo: 'Tab3 User2', eventSum: 50, urlAvatar:"https://ionicframework.com/docs/img/demos/avatar.svg"},
             ];
         }
+        const nomBoite = fetch(`http://localhost:3000/profile/${Cookies.get("username")}`).then( async(user) =>{
+            let output = await user.json();
+            setLabelGroup(output.company.name);
+        });
+
         setLeaderboardData(data);
-    }, [selectedSegment]);
+     },[selectedSegment]);
 
     return (
             <IonContent>
@@ -44,10 +50,10 @@ const Leaderboard: React.FC<LeaderboardProps> = ({usersData}) => {
                         <IonLabel>Worldwide</IonLabel>
                     </IonSegmentButton>
                     {connected != undefined ? (<IonSegmentButton value="tab2">
-                        <IonLabel>My group</IonLabel>
+                        <IonLabel>{labelGroupe}</IonLabel>
                     </IonSegmentButton>) : null}
                     <IonSegmentButton value="tab3">
-                        <IonLabel>Groups</IonLabel>
+                        <IonLabel>Group vs Group</IonLabel>
                     </IonSegmentButton>
                 </IonSegment>
                 <LeaderboardStructure list={LeaderboardData}/>
