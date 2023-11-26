@@ -25,13 +25,13 @@ const Leaderboard: React.FC<LeaderboardProps> = ({usersData}) => {
             data = usersData;
         } else if (selectedSegment === 'tab2') {
             data = [
-                {pseudo: 'Tab2 User1', eventSum: 80},
-                {pseudo: 'Tab2 User2', eventSum: 70},
+                {pseudo: 'Tab2 User1', eventSum: 80, urlAvatar:"https://ionicframework.com/docs/img/demos/avatar.svg"},
+                {pseudo: 'Tab2 User2', eventSum: 70, urlAvatar:"https://ionicframework.com/docs/img/demos/avatar.svg"},
             ];
         } else if (selectedSegment === 'tab3') {
             data = [
-                {pseudo: 'Tab3 User1', eventSum: 60},
-                {pseudo: 'Tab3 User2', eventSum: 50},
+                {pseudo: 'Tab3 User1', eventSum: 60, urlAvatar:"https://ionicframework.com/docs/img/demos/avatar.svg"},
+                {pseudo: 'Tab3 User2', eventSum: 50, urlAvatar:"https://ionicframework.com/docs/img/demos/avatar.svg"},
             ];
         }
         setLeaderboardData(data);
