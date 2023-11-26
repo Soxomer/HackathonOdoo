@@ -17,7 +17,9 @@ const Leaderboard: React.FC<LeaderboardProps> = ({usersData}) => {
         setSelectedSegment(event.detail.value);
     };
 
+    let connected = Cookies.get("username");
     useEffect(() => {
+        connected = Cookies.get("username");
         console.log('useEffect')
         let data: any = [];
         if (selectedSegment === 'tab1') {
@@ -42,7 +44,6 @@ const Leaderboard: React.FC<LeaderboardProps> = ({usersData}) => {
                     <IonSegmentButton value="tab1">
                         <IonLabel>World</IonLabel>
                     </IonSegmentButton>
-                    // @ts-ignore
                     {connected != undefined ? (<IonSegmentButton value="tab2">
                         <IonLabel>Boite</IonLabel>
                     </IonSegmentButton>) : null}
