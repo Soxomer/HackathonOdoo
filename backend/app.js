@@ -141,9 +141,10 @@ app.get('/profile/:user', (req, res) => {
 });
 
 // PATCH the company of the user
-app.patch('/profile/:username/company', async (req, res) => {
+app.patch('/profile/:username', async (req, res) => {
   const username = req.params.username;
-  const companyName = req.body.company;
+  const companyName = req.body.id;
+  console.log(companyName);
   const company = await prisma.company.findUnique({
     where: {
       name: companyName,
@@ -166,6 +167,50 @@ app.patch('/profile/:username/company', async (req, res) => {
     res.json(err);
   });
 });
+/*********************************WEBHOOK**************************************\
+ *                                                                            *
+ *                                                                            *
+ \*****************************************************************************/
+ app.post('/webhook/create/:username', async (req, res) => {
+  let token;
+  let pseudo;
+  if (req.params.username != undefined) {
+    const userEvents = prisma.user.findUnique({
+      where: {
+        pseudo: req.params.username,
+      },
+      include: {
+        events: true,
+      },
+    }).then(async (user) => {
+      token = user.token;
+      pseudo = user.pseudo;
+      console.log(token);
+      req.body.repos.map(async (item) => {
+      let test = await fetch(`https://api.github.com/repos/${pseudo}/${item.fullname}/hooks`, {
+        method: "POST",
+        headers: {
+          "Accept": "application/vnd.github+json",
+          "Authorization": `Bearer ${token}`,
+          "X-GitHub-Api-Version": "2022-11-28",
+          "Content-Type": "application/json"  // Add this line to specify the content type
+        },
+        body: JSON.stringify({
+          config: {
+            url: "http://nique-ta-mere.com:10/"
+          },
+          events:["*"]
+        })
+      });
+    });
+    }).catch((err) => {
+      res.json(err);
+    });
+  } else {
+    res.redirect('http://localhost:8100/');
+  }
+});
+
 /*********************************EVENTS**************************************\
  *                                                                            *
  *                                                                            *

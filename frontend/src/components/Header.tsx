@@ -1,11 +1,29 @@
-import { IonButton, IonButtons, IonIcon, IonTitle, IonToolbar } from "@ionic/react";
-import React from "react";
+import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonModal, IonTitle, IonToolbar } from "@ionic/react";
+import React, { useRef, useState } from "react";
 import Cookies from "js-cookie";
 import { home, logOut, personCircleOutline } from 'ionicons/icons';
 import { useEffect } from 'react';
+import UserForm from "./UserForm";
+import { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
 
 
 const Header: React.FC = () => {
+  const modal = useRef<HTMLIonModalElement>(null);
+  const input = useRef<HTMLIonInputElement>(null);
+
+  const [message, setMessage] = useState(
+      'This modal example uses triggers to automatically open a modal when the button is clicked.'
+  );
+
+  function confirm() {
+      modal.current?.dismiss(input.current?.value, 'confirm');
+  }
+
+  function onWillDismiss(ev: CustomEvent<OverlayEventDetail>) {
+      if (ev.detail.role === 'confirm') {
+          setMessage(`Hello, ${ev.detail.data}!`);
+      }
+  }
     let token = Cookies.get("username");
     useEffect(( ) => {
       token = Cookies.get("username");
@@ -16,10 +34,13 @@ const Header: React.FC = () => {
     }
   
   return (
-    <IonToolbar>
-        <IonTitle>OlymPush</IonTitle>
+    <IonToolbar class="ion-padding">
+        <IonTitle class="ff-abril">OlymPush</IonTitle>
         <IonButtons slot="secondary">
         {token != undefined ? (<>
+          <IonButton id="open-modal" expand="block">
+          Setup 
+        </IonButton>  
         <IonButton href="/profile">
             <IonIcon slot="icon-only" icon={ personCircleOutline }></IonIcon>
           </IonButton>
@@ -28,6 +49,16 @@ const Header: React.FC = () => {
           </IonButton>
           </>) : null}
         </IonButtons>
+        <IonModal ref={modal} trigger="open-modal" onWillDismiss={(ev) => onWillDismiss(ev)}>
+                    <IonHeader>
+                        <IonToolbar class="ion-text-center">
+                            <IonTitle>Setup your account</IonTitle>
+                        </IonToolbar>
+                    </IonHeader>
+                    <IonContent className="ion-padding">
+                        <UserForm/>
+                    </IonContent>
+                </IonModal>
       </IonToolbar>
   );
 };

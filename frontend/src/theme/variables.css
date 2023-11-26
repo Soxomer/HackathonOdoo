@@ -1,5 +1,13 @@
 /* Ionic Variables and Theming. For more info, please see:
 http://ionicframework.com/docs/theming/ */
+@font-face {
+  font-family: Abril;
+  src: url("../../assets/fonts/AbrilFatface-Regular.ttf");
+}
+
+.ff-abril{
+  font-family: "Abril";
+}
 
 /** Ionic CSS Variables **/
 :root {
@@ -76,7 +84,7 @@ http://ionicframework.com/docs/theming/ */
   --ion-color-light-tint: #f5f6f9;
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   /*
    * Dark Colors
    * -------------------------------------------

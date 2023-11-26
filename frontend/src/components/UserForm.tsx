@@ -5,7 +5,7 @@ import {IonButton, IonInput, IonSelect, IonSelectOption} from '@ionic/react';
 import Cookies from 'js-cookie';
 
 const UserForm: React.FC = () => {
-  const [input1, setInput1] = useState<string>('');
+  const [input1, setInput1] = useState<string[]>([]);
   const [input2, setInput2] = useState<string>('');
   const [showInput3, setShowInput3] = useState<boolean>(false);
   const [input3, setInput3] = useState<string>('');
@@ -31,17 +31,17 @@ const UserForm: React.FC = () => {
         body: JSON.stringify({name: input3}),
       });
     }
-    if (input1 !== '') {
-      // const repos = input1.map((repo: string) => {
-      //     return {fullname: repo}
-      // })
-      // fetch(`http://localhost:3000/profile/${Cookies.get('username')}`, {
-      //     method: 'POST',
-      //     headers: {
-      //         'Content-Type': 'application/json',
-      //     },
-      //     body: JSON.stringify({repos}),
-      // });
+    if (input1 !== null) {
+      const repos = input1.map((repo: string) => {
+          return {fullname: repo}
+      })
+      fetch(`http://localhost:3000/webhook/create/${Cookies.get("username")}`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({repos}),
+      });
     }
 
     if (input2 !== '') {
@@ -50,7 +50,7 @@ const UserForm: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({office: input2}),
+        body: JSON.stringify({id: input2}),
       });
     }
 
@@ -59,8 +59,11 @@ const UserForm: React.FC = () => {
   };
 
   const getListOfRepos = async () => {
-    const token = Cookies.get('github_token');
-    const response = await fetch(`https://api.github.com/user/repos`, {
+    const username = Cookies.get('username');
+    if (username === undefined) return;
+    const user = await fetch(`http://localhost:3000/profile/${username}`)
+    const {token} = await user.json();
+    const response = await fetch(`https://api.github.com/users/${username}/repos`, {
       method: 'GET',
       headers: {
         'Accept': 'application/vnd.github+json',
@@ -110,7 +113,7 @@ const UserForm: React.FC = () => {
             </IonSelect>
 
             {showInput3 && (
-                <IonInput label="Select the group you'd like to be a part of" labelPlacement="stacked"
+                <IonInput label="Create your own group !" labelPlacement="stacked"
                     onIonInput={(e: any) => setInput3(e.target.value)}
                     placeholder="Odoo ?!">
                 </IonInput>

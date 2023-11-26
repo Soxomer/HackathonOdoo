@@ -13,7 +13,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({usersData}) => {
     const [LeaderboardData, setLeaderboardData] = useState<any[]>([]);
     const [selectedSegment, setSelectedSegment] = useState<string>('tab1');
 
-    const handleSegmentChange = (event: CustomEvent) => {
+    const handleSegmentChange = async (event: CustomEvent) => {
         setSelectedSegment(event.detail.value);
     };
 
@@ -41,13 +41,13 @@ const Leaderboard: React.FC<LeaderboardProps> = ({usersData}) => {
             <IonContent>
                 <IonSegment onIonChange={handleSegmentChange}>
                     <IonSegmentButton value="tab1">
-                        <IonLabel>World</IonLabel>
+                        <IonLabel>Worldwide</IonLabel>
                     </IonSegmentButton>
                     {connected != undefined ? (<IonSegmentButton value="tab2">
-                        <IonLabel>Boite</IonLabel>
+                        <IonLabel>My group</IonLabel>
                     </IonSegmentButton>) : null}
                     <IonSegmentButton value="tab3">
-                        <IonLabel>Boite Vs Boite</IonLabel>
+                        <IonLabel>Groups</IonLabel>
                     </IonSegmentButton>
                 </IonSegment>
                 <LeaderboardStructure list={LeaderboardData}/>
