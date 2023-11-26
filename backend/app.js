@@ -43,39 +43,40 @@ passport.deserializeUser((obj, done) => {
 });
 
 passport.use(new GitHubStrategy({
-      clientID: "Iv1.bffad14f85e00390",
-      clientSecret: "14f9ed89365cdd5330d5023f117ddbad643f1a87",
+      clientID: "be61874ac7a59efb6531",
+      clientSecret: "bc75334acdf67f15a80bbcffee4d18cbe42539e6",
       callbackURL: "http://localhost:3000/auth/github/callback"
     }, async (accessToken, refreshToken, profile, done) => {
-
+    console.log("je suis la ")
+  console.log(accessToken)
       let user = await prisma.user.findUnique({
         where: {
           id: profile.id,
         },
       });
       if (user) {
-        prisma.user.update({
+        await prisma.user.update({
           where: {
             id: profile.id,
           },
           data: {
             token: accessToken,
           },
-        }).then(() => {
-            return done(null, profile);
         });
+        done(null, { accessToken: accessToken, profile: profile });
+        return;
       }
-
-        user = prisma.user.create({
-            data: {
-                id: profile.id,
-                name: profile.displayName,
-                pseudo: profile.username,
-                token: accessToken,
-                urlAvatar: profile._json.avatar_url,
-            },
-        });
-        return done(null, profile);
+      console.log(profile)
+      await prisma.user.create({
+        data: {
+          id: profile.id,
+          name: profile.displayName || profile.username,
+          pseudo: profile.username,
+          token: accessToken,
+          urlAvatar: profile._json.avatar_url,
+        },
+      })
+      done(null, { accessToken: accessToken, profile: profile });
     }
 ));
 
@@ -85,15 +86,11 @@ app.all('/', function (req, res, next) {
   next();
 });
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-})
-
 /**********************************AUTH***************************************\
  *                                                                            *
  \*****************************************************************************/
 app.get('/auth/github',
-    passport.authenticate('github', {scope: ['repo']}));
+    passport.authenticate('github', {scope: ['admin:repo_hook', 'repo']}));
 
 app.get('/auth/github/callback',
     passport.authenticate('github',
@@ -102,6 +99,13 @@ app.get('/auth/github/callback',
       res.cookie('username', req.user.username);
       res.redirect("http://localhost:8100/");
     });
+
+/**********************************HOME***************************************\
+ *                                                                            *
+\*****************************************************************************/
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+})
 
 // Logout route
 app.get('/logout', (req, res) => {
