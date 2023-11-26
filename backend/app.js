@@ -439,7 +439,7 @@ app.get('/ranking/company', async (req, res) => {
   });
   let cmp = sortedCompanies.map((company) => {
     return {
-      name: company.name,
+      pseudo: company.name,
       eventSum: company.eventSum,
     };
   });
