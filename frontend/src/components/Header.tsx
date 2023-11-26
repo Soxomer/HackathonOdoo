@@ -1,4 +1,4 @@
-import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonModal, IonTitle, IonToolbar } from "@ionic/react";
+import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonModal, IonRouterLink, IonTitle, IonToolbar } from "@ionic/react";
 import React, { useRef, useState } from "react";
 import Cookies from "js-cookie";
 import { home, logOut, personCircleOutline } from 'ionicons/icons';
@@ -35,7 +35,7 @@ const Header: React.FC = () => {
   
   return (
     <IonToolbar class="ion-padding">
-        <IonTitle class="ff-abril">OlymPush</IonTitle>
+        <IonTitle class="ff-abril"><IonRouterLink id="home-title" href="/">OlymPush</IonRouterLink></IonTitle>
         <IonButtons slot="secondary">
         {token != undefined ? (<>
           <IonButton id="open-modal" expand="block">

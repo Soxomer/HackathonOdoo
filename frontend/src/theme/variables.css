@@ -9,6 +9,11 @@ http://ionicframework.com/docs/theming/ */
   font-family: "Abril";
 }
 
+#home-title{
+  color:black!important;
+  text-decoration: none!important;
+}
+
 /** Ionic CSS Variables **/
 :root {
   /** primary **/
