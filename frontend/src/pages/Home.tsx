@@ -3,27 +3,24 @@ import {
     IonCol,
     IonContent,
     IonGrid,
-    IonHeader,
     IonIcon,
     IonImg,
-    IonModal,
     IonPage,
     IonRow,
     IonTitle,
-    IonToolbar
+
 } from '@ionic/react'
 import {logoGithub} from 'ionicons/icons';
 import Cookies from "js-cookie";
 import './Home.css';
 import {useEffect, useRef, useState} from 'react';
 import Header from '../components/Header';
-import UserForm from "../components/UserForm";
 import Leaderboard from '../components/Leaderboard';
-import {OverlayEventDetail} from '@ionic/react/dist/types/components/react-component-lib/interfaces';
 
 const Home: React.FC = () => {
 
     const [usersData, setUsersData] = useState([]);
+    const [groupData, setGroupData] = useState([]);
 
     const fetchAllData = async () => {
         try {
@@ -40,11 +37,27 @@ const Home: React.FC = () => {
         }
     };
 
+    const fetchGroupData = async () => {
+        try {
+            const response = await fetch('http://localhost:3000/ranking/company');
+
+            if (response.ok) {
+                const result = await response.json();
+                setGroupData(result);
+            } else {
+                console.error('Failed to fetch data from the backend');
+            }
+        } catch (error) {
+            console.error('An error occurred:', error);
+        }
+    };
+
     let token = Cookies.get("username");
     useEffect(() => {
         token = Cookies.get("username");
     })
     fetchAllData();
+    fetchGroupData();
 
     return (
         <IonPage>
@@ -84,7 +97,7 @@ const Home: React.FC = () => {
                         </IonCol>
                     </IonRow>
                 </IonGrid>
-                <Leaderboard usersData={usersData}/>
+                <Leaderboard usersData={usersData} groupData={groupData}/>
             </IonContent>
         </IonPage>
     );

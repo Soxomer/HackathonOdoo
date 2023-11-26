@@ -7,10 +7,12 @@ import Cookies from "js-cookie";
 
 interface LeaderboardProps {
     usersData: any;
+    groupData: any;
 }
 
-const Leaderboard: React.FC<LeaderboardProps> = ({usersData}) => {
+const Leaderboard: React.FC<LeaderboardProps> = ({usersData,groupData}) => {
     const [LeaderboardData, setLeaderboardData] = useState<any[]>([]);
+    const [LeaderboardGroupData, setLeaderboardGroupData] = useState<any[]>([]);
     const [selectedSegment, setSelectedSegment] = useState<string>('tab1');
     const [labelGroupe, setLabelGroup] =useState<String>('');
 
@@ -30,10 +32,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({usersData}) => {
                 {pseudo: 'Tab2 User2', eventSum: 70, urlAvatar:"https://ionicframework.com/docs/img/demos/avatar.svg"},
             ];
         } else if (selectedSegment === 'tab3') {
-            data = [
-                {pseudo: 'Tab3 User1', eventSum: 60, urlAvatar:"https://ionicframework.com/docs/img/demos/avatar.svg"},
-                {pseudo: 'Tab3 User2', eventSum: 50, urlAvatar:"https://ionicframework.com/docs/img/demos/avatar.svg"},
-            ];
+            data = groupData;
         }
         const nomBoite = fetch(`http://localhost:3000/profile/${Cookies.get("username")}`).then( async(user) =>{
             let output = await user.json();
