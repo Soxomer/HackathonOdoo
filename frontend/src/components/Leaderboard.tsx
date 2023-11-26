@@ -1,7 +1,7 @@
 // Leaderboard.tsx
 
 import React, {useEffect, useState} from 'react';
-import {IonContent, IonLabel, IonSegment, IonSegmentButton, IonTitle} from '@ionic/react';
+import {IonContent, IonLabel, IonSegment, IonSegmentButton} from '@ionic/react';
 import LeaderboardStructure from "./LeaderboardStructure";
 import Cookies from "js-cookie";
 
@@ -37,7 +37,10 @@ const Leaderboard: React.FC<LeaderboardProps> = ({usersData}) => {
         }
         const nomBoite = fetch(`http://localhost:3000/profile/${Cookies.get("username")}`).then( async(user) =>{
             let output = await user.json();
-            setLabelGroup(output.company.name);
+            if(output.company != undefined){
+                setLabelGroup(output.company.name);
+            }
+            console.log(labelGroupe);
         });
 
         setLeaderboardData(data);
@@ -49,7 +52,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({usersData}) => {
                     <IonSegmentButton value="tab1">
                         <IonLabel>Worldwide</IonLabel>
                     </IonSegmentButton>
-                    {connected != undefined ? (<IonSegmentButton value="tab2">
+                    {connected != undefined && labelGroupe != "" ? (<IonSegmentButton value="tab2">
                         <IonLabel>{labelGroupe}</IonLabel>
                     </IonSegmentButton>) : null}
                     <IonSegmentButton value="tab3">
