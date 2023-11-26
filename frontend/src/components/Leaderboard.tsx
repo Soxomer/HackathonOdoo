@@ -20,7 +20,6 @@ const Leaderboard: React.FC<LeaderboardProps> = ({usersData}) => {
     let connected = Cookies.get("username");
     useEffect(() => {
         connected = Cookies.get("username");
-        console.log('useEffect')
         let data: any = [];
         if (selectedSegment === 'tab1') {
             data = usersData;

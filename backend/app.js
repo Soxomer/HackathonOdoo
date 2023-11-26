@@ -66,17 +66,16 @@ passport.use(new GitHubStrategy({
         });
       }
 
-      user = prisma.user.create({
-        data: {
-          id: profile.id,
-          name: profile.displayName,
-          pseudo: profile.username,
-          token: accessToken,
-          urlAvatar: profile._json.avatar_url,
-        },
-      });
-      console.log(await user);
-      return done(null, profile);
+        user = prisma.user.create({
+            data: {
+                id: profile.id,
+                name: profile.displayName,
+                pseudo: profile.username,
+                token: accessToken,
+                urlAvatar: profile._json.avatar_url,
+            },
+        });
+        return done(null, profile);
     }
 ));
 

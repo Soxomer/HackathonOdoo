@@ -39,6 +39,7 @@ const Profile: React.FC = () => {
                             </IonAvatar>
                         </IonCol>
                         <IonCol size="12">
+                            //@ts-ignore
                             <IonLabel key={data.id}>{data.pseudo}</IonLabel>
                         </IonCol>
                     </IonRow>
