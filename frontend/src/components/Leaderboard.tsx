@@ -12,12 +12,27 @@ interface LeaderboardProps {
 
 const Leaderboard: React.FC<LeaderboardProps> = ({usersData,groupData}) => {
     const [LeaderboardData, setLeaderboardData] = useState<any[]>([]);
-    const [LeaderboardGroupData, setLeaderboardGroupData] = useState<any[]>([]);
+    const [LeaderboardGroupData, setLeaderboardGroupData] = useState([]);
     const [selectedSegment, setSelectedSegment] = useState<string>('tab1');
     const [labelGroupe, setLabelGroup] =useState<String>('');
 
     const handleSegmentChange = async (event: CustomEvent) => {
         setSelectedSegment(event.detail.value);
+    };
+
+    const fetchInsideGroupData = async (group) => {
+        try {
+            const response = await fetch(`http://localhost:3000/ranking/company/${group}`);
+
+            if (response.ok) {
+                const result = await response.json();
+                setLeaderboardGroupData(result);
+            } else {
+                console.error('Failed to fetch data from the backend');
+            }
+        } catch (error) {
+            console.error('An error occurred:', error);
+        }
     };
 
     let connected = Cookies.get("username");
@@ -27,10 +42,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({usersData,groupData}) => {
         if (selectedSegment === 'tab1') {
             data = usersData;
         } else if (selectedSegment === 'tab2') {
-            data = [
-                {pseudo: 'Tab2 User1', eventSum: 80, urlAvatar:"https://ionicframework.com/docs/img/demos/avatar.svg"},
-                {pseudo: 'Tab2 User2', eventSum: 70, urlAvatar:"https://ionicframework.com/docs/img/demos/avatar.svg"},
-            ];
+            data = LeaderboardGroupData;
         } else if (selectedSegment === 'tab3') {
             data = groupData;
         }
@@ -38,8 +50,8 @@ const Leaderboard: React.FC<LeaderboardProps> = ({usersData,groupData}) => {
             let output = await user.json();
             if(output.company != undefined){
                 setLabelGroup(output.company.name);
+                fetchInsideGroupData(output.company.name);
             }
-            console.log(labelGroupe);
         });
 
         setLeaderboardData(data);

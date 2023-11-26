@@ -393,6 +393,7 @@ app.get('/ranking/company/:companyName', (req, res) => {
         return {
           pseudo: user.pseudo,
           eventSum: user.eventSum,
+          urlAvatar: user.urlAvatar
         };
       });
       res.json(usr);
