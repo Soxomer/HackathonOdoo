@@ -47,8 +47,6 @@ passport.use(new GitHubStrategy({
       clientSecret: "bc75334acdf67f15a80bbcffee4d18cbe42539e6",
       callbackURL: "http://localhost:3000/auth/github/callback"
     }, async (accessToken, refreshToken, profile, done) => {
-    console.log("je suis la ")
-  console.log(accessToken)
       let user = await prisma.user.findUnique({
         where: {
           id: profile.id,
@@ -66,7 +64,6 @@ passport.use(new GitHubStrategy({
         done(null, { accessToken: accessToken, profile: profile });
         return;
       }
-      console.log(profile)
       await prisma.user.create({
         data: {
           id: profile.id,
@@ -96,7 +93,8 @@ app.get('/auth/github/callback',
     passport.authenticate('github',
         {failureRedirect: 'http://localhost:8100/error'}),
     function (req, res) {
-      res.cookie('username', req.user.username);
+      res.cookie('username', req.user.profile.username);
+      res.cookie('github_token', req.user.accessToken);
       res.redirect("http://localhost:8100/");
     });
 
