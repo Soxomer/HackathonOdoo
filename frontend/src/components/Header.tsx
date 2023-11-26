@@ -17,11 +17,7 @@ const Header: React.FC = () => {
   
   return (
     <IonToolbar>
-        <IonButtons slot="start">
-        <IonButton href="/">
-            <IonIcon slot="icon-only" icon={ home }></IonIcon>
-          </IonButton>
-        </IonButtons>
+        <IonTitle>OlymPush</IonTitle>
         <IonButtons slot="secondary">
         {token != undefined ? (<>
         <IonButton href="/profile">
