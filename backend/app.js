@@ -54,20 +54,20 @@ passport.use(new GitHubStrategy({
             },
         });
         if (await user) {
-        return done(null, profile);
-      }
+            return done(null, profile);
+        }
 
-      user = prisma.user.create({
-        data: {
-          id: profile.id,
-          name: profile.displayName,
-          pseudo: profile.username,
-          token: accessToken,
-          urlAvatar: profile._json.avatar_url,
-        },
-      });
-      console.log(await user);
-      return done(null, profile);
+        user = prisma.user.create({
+            data: {
+                id: profile.id,
+                name: profile.displayName,
+                pseudo: profile.username,
+                token: accessToken,
+                urlAvatar: profile._json.avatar_url,
+            },
+        });
+        console.log(await user);
+        return done(null, profile);
     }
 ));
 
@@ -127,22 +127,31 @@ app.get('/profile/:user', (req, res) => {
     }
 });
 
-// PATCH the repos of the user
-app.patch('/profile/:username/repos', (req, res) => {
-  const repos = req.body.repos;
-  const username = req.params.username;
-  prisma.user.update({
-    where: {
-      pseudo: username,
-    },
-    data: {
-      repos: repos,
-    },
-  }).then((user) => {
-    res.json(user);
-  }).catch((err) => {
-    res.json(err);
-  });
+// PATCH the company of the user
+app.patch('/profile/:username/company', async (req, res) => {
+    const username = req.params.username;
+    const companyName = req.body.company;
+    const company = await prisma.company.findUnique({
+        where: {
+            name: companyName,
+        },
+    });
+    if (company === null) {
+        res.status(404).send('Company not found');
+        return;
+    }
+    prisma.user.update({
+        where: {
+            pseudo: username,
+        },
+        data: {
+            companyId: company.id,
+        },
+    }).then((user) => {
+        res.json(user);
+    }).catch((err) => {
+        res.json(err);
+    });
 });
 /*********************************EVENTS**************************************\
  *                                                                            *
@@ -150,34 +159,34 @@ app.patch('/profile/:username/repos', (req, res) => {
  \*****************************************************************************/
 // Create a new event
 app.post('/event', async (req, res) => {
-  const {type, creator} = req.body;
-  const event = await prisma.event.findFirst({
+    const {type, creator} = req.body;
+    const event = await prisma.event.findFirst({
         where: {
             type: type,
             creatorId: creator,
-    },
-  });
+        },
+    });
     if (event === null) {
         // IF event doesn't exist, create it
-    const newEvent = await prisma.event.create({
-      data: {
-        type: type,
-        creatorId: creator,
-      },
+        const newEvent = await prisma.event.create({
+            data: {
+                type: type,
+                creatorId: creator,
+            },
+        });
+        res.json(newEvent);
+        return;
+    }
+    // IF event already exists, increment quantity
+    const eventUpdate = await prisma.event.update({
+        where: {
+            id: event.id,
+        },
+        data: {
+            quantity: event.quantity + 1,
+        },
     });
-    res.json(newEvent);
-    return;
-  }
-  // IF event already exists, increment quantity
-  const eventUpdate = await prisma.event.update({
-    where: {
-      id: event.id,
-    },
-    data: {
-      quantity: event.quantity + 1,
-    },
-  });
-  res.json(eventUpdate);
+    res.json(eventUpdate);
     return;
 });
 
@@ -185,67 +194,63 @@ app.post('/event', async (req, res) => {
 /*********************************RANKING*************************************\
  *                                                                            *
  *                                                                            *
-\*****************************************************************************/
+ \*****************************************************************************/
 // Sum the quantity of events for each user and sort them by descending order
 app.get('/ranking/users', async (req, res) => {
-  const users = await prisma.user.findMany({
-    include: {
-      events: true,
-    },
-  });
-  const usersWithEvents = users.map((user) => {
-    return {
-      ...user,
-      eventSum: user.events.length === 0 ? 0 : user.events.reduce(
-          (acc, event) => {
-            return acc + event.quantity;
-          }, 0),
-    };
-  });
-  const sortedUsers = usersWithEvents.sort((a, b) => {
-    return b.eventSum - a.eventSum;
-  });
-  let usr = sortedUsers.map((user) => {
-    return {
-      pseudo: user.pseudo,
-      eventSum: user.eventSum,
-    };
-  });
-  res.json(usr);
+    const users = await prisma.user.findMany({
+        include: {
+            events: true,
+        },
+    });
+    const usersWithEvents = users.map((user) => {
+        return {
+            ...user,
+            eventSum: user.events.length === 0 ? 0 : user.events.reduce(
+                (acc, event) => {
+                    return acc + event.quantity;
+                }, 0),
+        };
+    });
+    const sortedUsers = usersWithEvents.sort((a, b) => {
+        return b.eventSum - a.eventSum;
+    });
+    let usr = sortedUsers.map((user) => {
+        return {
+            pseudo: user.pseudo,
+            eventSum: user.eventSum,
+        };
+    });
+    res.json(usr);
 });
 
 // GET all users with their number of events from a company
 app.get('/ranking/company/:companyName', (req, res) => {
-    // if (!req.isAuthenticated()) {
-  //   res.redirect('/');
-  //   return;
-  // }
-  const company = req.params.companyName;
-  prisma.company.findUnique({
-    where: {
-      name: company,
-    },
-  }).catch((err) => {
-    console.log(err);
-    res.json(err);
-  }).then((company) => {
-    prisma.user.findMany({
-      where: {
-        company: {
-          name: company.name,
+    const company = req.params.companyName;
+    prisma.company.findUnique({
+        where: {
+            name: company,
         },
-      },
-      include: {
-        events: true,
-      },
-    }).then((users) => {
-      const usersWithEvents = users.map((user) => {
-        return {
-          ...user,
-          eventSum: user.events.length === 0 ? 0 : user.events.reduce(
-              (acc, event) => {
-                return acc + event.quantity;
-              }, 0),
+    }).catch((err) => {
+        console.log(err);
+        res.json(err);
+    }).then((company) => {
+        prisma.user.findMany({
+            where: {
+                company: {
+                    name: company.name,
+                },
+            },
+            include: {
+                events: true,
+            },
+        }).then((users) => {
+            const usersWithEvents = users.map((user) => {
+                return {
+                    ...user,
+                    eventSum: user.events.length === 0 ? 0 : user.events.reduce(
+                        (acc, event) => {
+                            return acc + event.quantity;
+                        }, 0),
                 };
             });
             const sortedUsers = usersWithEvents.sort((a, b) => {
@@ -286,46 +291,45 @@ app.post('/company', async (req, res) => {
 });
 // GET the events from all user of each company and sort them by descending order
 app.get('/ranking/company', async (req, res) => {
-  const companies = await prisma.company.findMany({
-        include: {
-          users: {
+    const companies = await prisma.company.findMany({
             include: {
-              events: true,
+                users: {
+                    include: {
+                        events: true,
+                    },
+                },
             },
-          },
-        },
-      }
-  );
-  const companiesWithEvents = companies.map((company) => {
-    return {
-      ...company,
-      events: company.users?.length === 0 || company.users === null
-      || company.users === undefined ? [] : company.users.reduce(
-          (acc, user) => {
-            console.log(user.events)
-            return acc.concat(user.events);
-          }, []),
-    };
-  });
-  const companiesWithEventsSum = companiesWithEvents.map((company) => {
-    return {
-      ...company,
-      eventSum: company.events.length === 0 ? 0 : company.events.reduce(
-          (acc, event) => {
-            return acc + event.quantity;
-          }, 0),
-    };
-  });
-  const sortedCompanies = companiesWithEventsSum.sort((a, b) => {
-    return b.eventSum - a.eventSum;
-  });
-  let cmp = sortedCompanies.map((company) => {
-    return {
-      name: company.name,
-      eventSum: company.eventSum,
-    };
-  });
-  res.json(cmp);
+        }
+    );
+    const companiesWithEvents = companies.map((company) => {
+        return {
+            ...company,
+            events: company.users?.length === 0 || company.users === null
+            || company.users === undefined ? [] : company.users.reduce(
+                (acc, user) => {
+                    return acc.concat(user.events);
+                }, []),
+        };
+    });
+    const companiesWithEventsSum = companiesWithEvents.map((company) => {
+        return {
+            ...company,
+            eventSum: company.events.length === 0 ? 0 : company.events.reduce(
+                (acc, event) => {
+                    return acc + event.quantity;
+                }, 0),
+        };
+    });
+    const sortedCompanies = companiesWithEventsSum.sort((a, b) => {
+        return b.eventSum - a.eventSum;
+    });
+    let cmp = sortedCompanies.map((company) => {
+        return {
+            name: company.name,
+            eventSum: company.eventSum,
+        };
+    });
+    res.json(cmp);
 });
 
 // Start server

@@ -35,24 +35,23 @@ passport.use(new GitHubStrategy({
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
-})
+  })
 
 app.get('/auth/github',
-    passport.authenticate('github'));
+  passport.authenticate('github'));
 
-app.get('/auth/github/callback',
-    passport.authenticate('github', {failureRedirect: '/login'}),
-    function (req, res) {
-        // Successful authentication, redirect home.
-        res.redirect('/');
-    });
+app.get('/auth/github/callback', 
+  passport.authenticate('github', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+});
+
 
 // Logout route
 app.get('/logout', (req, res) => {
-    req.logout(function (err) {
-        if (err) {
-            return next(err);
-        }
+    req.logout(function(err) {
+        if (err) { return next(err); }
         res.redirect('/');
     });
 });

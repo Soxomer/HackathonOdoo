@@ -5,7 +5,7 @@ import {key} from "ionicons/icons";
 
 interface UserDataType {
     pseudo: string;
-    eventsCount: Int16Array;
+    eventSum: Int16Array;
 }
 
 interface LeaderboardStructureProps {
@@ -17,11 +17,11 @@ const LeaderboardStructure: React.FC<LeaderboardStructureProps> = ({list}) => {
     <div className="leaderboard">
         {
             list.map((item, index) => {
-                if(index == 0) return <LeaderboardItem classname="first-item" key={item.pseudo} name={item.pseudo} url="https://ionicframework.com/docs/img/demos/avatar.svg" score={item.eventsCount}/>
-                if(index == 1) return <LeaderboardItem classname="second-item" key={item.pseudo} name={item.pseudo} url="https://ionicframework.com/docs/img/demos/avatar.svg" score={item.eventsCount}/>
-                if(index == 2) return <LeaderboardItem classname="third-item" key={item.pseudo} name={item.pseudo} url="https://ionicframework.com/docs/img/demos/avatar.svg" score={item.eventsCount}/>
+                if(index == 0) return <LeaderboardItem classname="first-item" key={index} name={item.pseudo} url="https://ionicframework.com/docs/img/demos/avatar.svg" score={item.eventSum}/>
+                if(index == 1) return <LeaderboardItem classname="second-item" key={index} name={item.pseudo} url="https://ionicframework.com/docs/img/demos/avatar.svg" score={item.eventSum}/>
+                if(index == 2) return <LeaderboardItem classname="third-item" key={index} name={item.pseudo} url="https://ionicframework.com/docs/img/demos/avatar.svg" score={item.eventSum}/>
                 return (
-                    <LeaderboardItem key={item.pseudo} name={item.pseudo} url="https://ionicframework.com/docs/img/demos/avatar.svg" score={item.eventsCount}/>
+                    <LeaderboardItem key={index} name={item.pseudo} url="https://ionicframework.com/docs/img/demos/avatar.svg" score={item.eventSum}/>
                 )
             })
         }

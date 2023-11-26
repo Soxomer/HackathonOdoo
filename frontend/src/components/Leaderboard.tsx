@@ -17,22 +17,20 @@ const Leaderboard: React.FC<LeaderboardProps> = ({usersData}) => {
         setSelectedSegment(event.detail.value);
     };
 
-    let connected = Cookies.get("username");
     useEffect(() => {
-        connected = Cookies.get("username");
         console.log('useEffect')
         let data: any = [];
         if (selectedSegment === 'tab1') {
             data = usersData;
         } else if (selectedSegment === 'tab2') {
             data = [
-                {pseudo: 'Tab2 User1', eventsCount: 80},
-                {pseudo: 'Tab2 User2', eventsCount: 70},
+                {pseudo: 'Tab2 User1', eventSum: 80},
+                {pseudo: 'Tab2 User2', eventSum: 70},
             ];
         } else if (selectedSegment === 'tab3') {
             data = [
-                {pseudo: 'Tab3 User1', eventsCount: 60},
-                {pseudo: 'Tab3 User2', eventsCount: 50},
+                {pseudo: 'Tab3 User1', eventSum: 60},
+                {pseudo: 'Tab3 User2', eventSum: 50},
             ];
         }
         setLeaderboardData(data);
@@ -44,6 +42,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({usersData}) => {
                     <IonSegmentButton value="tab1">
                         <IonLabel>World</IonLabel>
                     </IonSegmentButton>
+                    // @ts-ignore
                     {connected != undefined ? (<IonSegmentButton value="tab2">
                         <IonLabel>Boite</IonLabel>
                     </IonSegmentButton>) : null}
@@ -54,6 +53,6 @@ const Leaderboard: React.FC<LeaderboardProps> = ({usersData}) => {
                 <LeaderboardStructure list={LeaderboardData}/>
             </IonContent>
     );
-}
+};
 
 export default Leaderboard;
