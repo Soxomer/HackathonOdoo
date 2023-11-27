@@ -44,8 +44,8 @@ passport.deserializeUser((obj, done) => {
 });
 
 passport.use(new GitHubStrategy({
-      clientID: "be61874ac7a59efb6531",
-      clientSecret: "bc75334acdf67f15a80bbcffee4d18cbe42539e6",
+      clientID: "client-id",
+      clientSecret: "client-secret",
       callbackURL: "http://localhost:3000/auth/github/callback"
     }, async (accessToken, refreshToken, profile, done) => {
       let user = await prisma.user.findUnique({
